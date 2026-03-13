@@ -2,6 +2,7 @@ import WordData from '../../models/WordData';
 import { RectangularText } from '../atoms/RectangularText';
 import { CardBack } from '../molecules/CardBack';
 import { CardFront } from '../molecules/CardFront'
+import { vibrator } from '@kit.SensorServiceKit';
 
 @Component
 export struct FlashCard {
@@ -14,13 +15,38 @@ export struct FlashCard {
   @State private rotation: number = 0
   private uiCtx: UIContext | null = null;
   startX: number = 0;
+  startY: number = 0;
   @State cardRotation: number = 0;
+  @State cardTilt: number = 0;
   cardBackRotationSpeed: number = 2;
 
   @State opacityRight: number = 0;
 
+  @StorageProp('hapticEnabled') hapticEnabled: boolean = true;
+
   aboutToAppear() {
     this.uiCtx = this.getUIContext();
+  }
+
+  private triggerHaptic(duration: number) {
+    if (!this.hapticEnabled) {
+      return;
+    }
+    try {
+      vibrator.startVibration({
+        type: 'time',
+        duration: duration,
+      }, {
+        id: 0,
+        usage: 'touch'
+      }, (error) => {
+        if (error) {
+          console.error(`Vibration failed: ${JSON.stringify(error)}`);
+        }
+      });
+    } catch (e) {
+      console.error(`Haptic feedback error: ${JSON.stringify(e)}`);
+    }
   }
 
   private swipeAndDo(rotation: number, func: () => void): void {
@@ -39,28 +65,36 @@ export struct FlashCard {
   }
 
   swipeRight() {
+    this.triggerHaptic(50);
+    setTimeout(() => {
+        this.triggerHaptic(50);
+    }, 100);
     this.swipeAndDo(180, () => {
       this.cardRotation = 0
       this.swipeDirection = true
       this.swiped = true
       this.opacityRight = 0
       this.front = true
+      this.cardTilt = 0
     });
   }
 
   swipeLeft() {
+    this.triggerHaptic(200);
     this.swipeAndDo(-180, () => {
       this.cardRotation = 0
       this.swipeDirection = false
       this.swiped = true
       this.opacityRight = 0
       this.front = true
+      this.cardTilt = 0
     });
   }
 
   animateBack() {
     this.swipeAndDo(0, () => {
       this.opacityRight = 0
+      this.cardTilt = 0
     });
   }
 
@@ -68,6 +102,7 @@ export struct FlashCard {
     if (!this.uiCtx) {
       return;
     }
+    this.triggerHaptic(50);
     this.uiCtx.animateTo({
       duration: 250,
       curve: Curve.EaseIn,
@@ -134,12 +169,14 @@ export struct FlashCard {
         angle: this.rotation,
         perspective: -800
       })
-      .backgroundColor(Color.White)
+      .backgroundColor('#2D2D44')
       .borderRadius(10)
-      .borderColor(Color.Black)
+      .borderColor('#444466')
       .borderWidth(2)
+      .shadow({ radius: 10, color: '#000000', offsetX: 5, offsetY: 5 })
     }
     .rotate({ angle: this.cardRotation, centerY: 1000 })
+    .rotate({ x: 0, y: 1, z: 0, angle: this.cardTilt, perspective: -800 })
     .onTouch((event: TouchEvent) => {
       if (!event || !this.isActive || this.rotationCount === 0) {
         return;
@@ -148,10 +185,13 @@ export struct FlashCard {
       switch (event.type) {
         case TouchType.Down:
           this.startX = event.touches[0].displayX;
+          this.startY = event.touches[0].displayY;
           break;
         case TouchType.Move:
           if (!this.swiped) {
-            this.cardRotation = (event.touches[0].displayX - this.startX) / 10;
+            const dx = event.touches[0].displayX - this.startX;
+            this.cardRotation = dx / 10;
+            this.cardTilt = dx / 20;
             this.opacityRight = this.cardRotation / 5;
           }
           break;

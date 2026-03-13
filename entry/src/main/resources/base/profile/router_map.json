@@ -7,6 +7,22 @@
       "data": {
         "description": "FlashCardsPage"
       }
+    },
+    {
+      "name": "StatisticsPage",
+      "pageSourceFile": "src/main/ets/pages/StatisticsPage.ets",
+      "buildFunction": "statisticsPageBuilder",
+      "data": {
+        "description": "StatisticsPage"
+      }
+    },
+    {
+      "name": "SettingsPage",
+      "pageSourceFile": "src/main/ets/pages/SettingsPage.ets",
+      "buildFunction": "settingsPageBuilder",
+      "data": {
+        "description": "SettingsPage"
+      }
     }
   ]
 }
