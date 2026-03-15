@@ -52,6 +52,10 @@ struct StatisticsPage {
       this.pathStack = context.pathStack
     })
     .hideTitleBar(true)
+    .onBackPressed(() => {
+        this.pathStack.pop()
+        return true
+    })
   }
 
   @Builder

@@ -27,10 +27,10 @@ struct FlashCardsPage {
       Stack() {
         Column() {
           Text(this.remainingCount.learnedCount + ` cards learned`)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontSize(12)
           Text(this.remainingCount.unlearnedCount + ` cards left`)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontSize(12)
         }
         .width('100%')
@@ -44,7 +44,7 @@ struct FlashCardsPage {
               fontSize: { value: 12, unit: LengthUnit.PX },
               label: 'Go back',
               position: ArcButtonPosition.TOP_EDGE,
-              styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
+              styleMode: ArcButtonStyleMode.EMPHASIZED_DARK,
               onClick: (): void => {
                 console.info('Go back button pressed')
                 this.databaseManager.close()
@@ -72,13 +72,14 @@ struct FlashCardsPage {
             .width('55%')
           } else {
             Column() {
-              CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16)
+              CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16, Color.White)
               Button('Clear progress')
                 .onClick(async () => {
                   await this.databaseManager.setAllUnlearned()
                   this.databaseManager.close()
                   this.pathStack.pop()
                 })
+                .backgroundColor('#FF6B35')
                 .margin(5)
             }
             .height('55%')
@@ -89,7 +90,7 @@ struct FlashCardsPage {
 
         } else {
           Text('Loading...')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontSize(24)
         }
       }
@@ -140,6 +141,9 @@ struct FlashCardsPage {
     .height('100%')
     .width('100%')
     .hideTitleBar(true)
-    .backgroundColor('#fffff2ea')
+    .backgroundColor('#1A1A2E')
+    .onBackPressed(() => {
+        return true;
+    })
   }
 }
