@@ -15,8 +15,10 @@ struct SettingsPage {
   build() {
     NavDestination() {
       Column() {
-        CustomText('Settings', 24, Color.White)
-          .margin({ bottom: 20 })
+        Column() {
+          CustomText('Settings', 24, Color.White)
+        }
+        .margin({ bottom: 20 })
 
         Column() {
           Row() {

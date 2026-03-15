@@ -23,8 +23,10 @@ struct StatisticsPage {
   build() {
     NavDestination() {
       Column() {
-        CustomText('Learning Statistics', 24, Color.White)
-          .margin({ bottom: 20 })
+        Column() {
+          CustomText('Learning Statistics', 24, Color.White)
+        }
+        .margin({ bottom: 20 })
 
         Column() {
           this.StatRow('Current Streak', `${this.streak} days`, '#FF6B35')
