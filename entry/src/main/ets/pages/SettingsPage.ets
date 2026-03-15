@@ -1,4 +1,5 @@
 import { CustomText } from '../components/atoms/CustomText';
+import { notificationManager } from '@kit.NotificationKit';
 
 @Builder
 function settingsPageBuilder() {
@@ -10,13 +11,38 @@ function settingsPageBuilder() {
 struct SettingsPage {
   pathStack: NavPathStack = new NavPathStack()
   @StorageLink('hapticEnabled') hapticEnabled: boolean = true;
+  @StorageLink('remindersEnabled') remindersEnabled: boolean = false;
   @StorageLink('dailyGoal') dailyGoal: number = 10;
+
+  async toggleReminders(isOn: boolean) {
+    this.remindersEnabled = isOn;
+    if (isOn) {
+      try {
+        const request: notificationManager.NotificationRequest = {
+          id: 1,
+          content: {
+            contentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+            normal: {
+              title: 'Time to study!',
+              text: 'Dont forget to review your flash cards today.',
+              additionalText: 'Keep your streak alive!'
+            }
+          },
+          deliveryTime: new Date().getTime() + 5000 // Test reminder in 5 seconds
+        };
+        await notificationManager.publish(request);
+        console.info('Notification published');
+      } catch (e) {
+        console.error('Notification failed: ' + JSON.stringify(e));
+      }
+    }
+  }
 
   build() {
     NavDestination() {
       Column() {
         Column() {
-          CustomText('Settings', 24, Color.Black)
+          CustomText('Settings', 24)
         }
         .margin({ bottom: 20 })
 
@@ -29,6 +55,23 @@ struct SettingsPage {
             Toggle({ type: ToggleType.Switch, isOn: this.hapticEnabled })
               .onChange((isOn: boolean) => {
                 this.hapticEnabled = isOn;
+              })
+          }
+          .width('100%')
+          .padding(10)
+          .backgroundColor(Color.White)
+          .borderRadius(10)
+          .margin({ bottom: 10 })
+          .border({width: 1, color: Color.Black})
+
+          Row() {
+            Text('Study Reminders')
+              .fontColor(Color.Black)
+              .fontSize(16)
+            Blank()
+            Toggle({ type: ToggleType.Switch, isOn: this.remindersEnabled })
+              .onChange((isOn: boolean) => {
+                this.toggleReminders(isOn);
               })
           }
           .width('100%')

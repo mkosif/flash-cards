@@ -23,6 +23,22 @@
       "data": {
         "description": "SettingsPage"
       }
+    },
+    {
+      "name": "QuizPage",
+      "pageSourceFile": "src/main/ets/pages/QuizPage.ets",
+      "buildFunction": "quizPageBuilder",
+      "data": {
+        "description": "QuizPage"
+      }
+    },
+    {
+      "name": "AddWordPage",
+      "pageSourceFile": "src/main/ets/pages/AddWordPage.ets",
+      "buildFunction": "addWordPageBuilder",
+      "data": {
+        "description": "AddWordPage"
+      }
     }
   ]
 }

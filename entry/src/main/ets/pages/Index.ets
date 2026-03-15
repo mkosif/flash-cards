@@ -13,7 +13,8 @@ struct Index {
     new WordList('A1 English', 'A1English'),
     new WordList('A1 Spanish', 'A1Spanish'),
     new WordList('A1 French', 'A1French'),
-    new WordList('A1 Turkish', 'A1Turkish')
+    new WordList('A1 Turkish', 'A1Turkish'),
+    new WordList('My Custom List', 'MyCustomList')
   ]
   @State selectedIndex: number = -1;
   @State remaining: Remaining = { learnedCount: 0, unlearnedCount: 0 };
@@ -33,61 +34,101 @@ struct Index {
 
   build() {
     Navigation(this.pathStack) {
-      Column() {
-
-        Text('Flash Cards')
-          .fontColor(Color.Black)
-          .fontStyle(FontStyle.Italic)
-          .fontSize(28)
-          .padding(10)
-
+      Scroll() {
         Column() {
-          Text(this.selectedIndex === -1 ? 'Click to select word list' : this.wordLists[this.selectedIndex].name)
-            .fontSize(18)
+
+          Text('Flash Cards')
             .fontColor(Color.Black)
-            .fontWeight(FontWeight.Bold)
+            .fontStyle(FontStyle.Italic)
+            .fontSize(28)
+            .padding(10)
+
+          Column() {
+            Text(this.selectedIndex === -1 ? 'Click to select word list' : this.wordLists[this.selectedIndex].name)
+              .fontSize(18)
+              .fontColor(Color.Black)
+              .fontWeight(FontWeight.Bold)
+          }
+          .bindMenu(this.MyMenu)
+          .height(30)
+          .padding({left: 10, right: 10})
+          .backgroundColor('#11ff30ff')
+          .margin({ bottom: 20 })
+          .justifyContent(FlexAlign.Center)
+
+          Button('Start Learning')
+            .onClick(async () => {
+              if (this.selectedIndex === -1) {
+                return;
+              }
+              let databaseManager: DatabaseManager = new DatabaseManager()
+              try {
+                await databaseManager.createStore(this.ctx, this.wordLists[this.selectedIndex].fileName)
+                let param: DatabaseManagerParam = { databaseManager: databaseManager }
+                this.pathStack.pushPathByName('FlashCardsPage', param)
+              } catch (e) {
+                databaseManager.close();
+                console.error(`Database error: ${e}`)
+              }
+            })
+            .width('70%')
+            .margin({ bottom: 10 })
+
+          Button('Quick Quiz')
+            .onClick(async () => {
+              if (this.selectedIndex === -1) {
+                  return;
+              }
+              let databaseManager: DatabaseManager = new DatabaseManager()
+              try {
+                await databaseManager.createStore(this.ctx, this.wordLists[this.selectedIndex].fileName)
+                let param: DatabaseManagerParam = { databaseManager: databaseManager }
+                this.pathStack.pushPathByName('QuizPage', param)
+              } catch (e) {
+                databaseManager.close();
+                console.error(`Database error: ${e}`)
+              }
+            })
+            .width('70%')
+            .backgroundColor('#00D4AA')
+            .margin({ bottom: 10 })
+
+          Button('Add New Word')
+            .onClick(async () => {
+                if (this.selectedIndex === -1) {
+                  this.selectedIndex = this.wordLists.length - 1; // Default to Custom List
+                }
+                let databaseManager: DatabaseManager = new DatabaseManager()
+                try {
+                  await databaseManager.createStore(this.ctx, this.wordLists[this.selectedIndex].fileName)
+                  let param: DatabaseManagerParam = { databaseManager: databaseManager }
+                  this.pathStack.pushPathByName('AddWordPage', param)
+                } catch (e) {
+                  databaseManager.close();
+                  console.error(`Database error: ${e}`)
+                }
+            })
+            .width('70%')
+            .backgroundColor('#FF6B35')
+
+          Row() {
+              Button('Stats')
+                  .onClick(() => {
+                      this.pathStack.pushPathByName('StatisticsPage', null)
+                  })
+                  .margin(10)
+
+              Button('Settings')
+                  .onClick(() => {
+                      this.pathStack.pushPathByName('SettingsPage', null)
+                  })
+                  .margin(10)
+          }
+          .margin({top: 20})
         }
-        .bindMenu(this.MyMenu)
-        .height(30)
-        .padding({left: 10, right: 10})
-        .backgroundColor('#11ff30ff')
-        .margin({ bottom: 20 })
-        .justifyContent(FlexAlign.Center)
-
-        Button('Start')
-          .onClick(async () => {
-            if (this.selectedIndex === -1) {
-              return;
-            }
-            let databaseManager: DatabaseManager = new DatabaseManager()
-            try {
-              await databaseManager.createStore(this.ctx, this.wordLists[this.selectedIndex].fileName)
-              let param: DatabaseManagerParam = { databaseManager: databaseManager }
-              this.pathStack.pushPathByName('FlashCardsPage', param)
-            } catch (e) {
-              databaseManager.close();
-              console.error(`Database error: ${e}`)
-            }
-          })
-
-        Row() {
-            Button('Stats')
-                .onClick(() => {
-                    this.pathStack.pushPathByName('StatisticsPage', null)
-                })
-                .margin(10)
-
-            Button('Settings')
-                .onClick(() => {
-                    this.pathStack.pushPathByName('SettingsPage', null)
-                })
-                .margin(10)
-        }
-        .margin({top: 20})
+        .width('100%')
       }
-      .height('100%')
-      .width('100%')
-      .justifyContent(FlexAlign.Center)
+      .scrollBar(BarState.Off)
     }
     .hideTitleBar(true)
     .hideBackButton(true)

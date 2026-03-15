@@ -12,45 +12,71 @@ struct StatisticsPage {
   @State streak: number = 0;
   @State totalLearned: number = 0;
   @State accuracy: number = 0;
+  @State achievements: string[] = [];
 
   aboutToAppear() {
     this.streak = AppStorage.get<number>('streak') || 0;
-    // Mock values for now, would be fetched from DB in a real scenario
-    this.totalLearned = 42;
-    this.accuracy = 85;
+    this.totalLearned = AppStorage.get<number>('totalLearned') || 0;
+    this.accuracy = AppStorage.get<number>('accuracy') || 0;
+
+    this.achievements = [];
+    if (this.totalLearned >= 10) this.achievements.push('🎓 Beginner');
+    if (this.totalLearned >= 50) this.achievements.push('📜 Scholar');
+    if (this.streak >= 7) this.achievements.push('🔥 Weekly Warrior');
   }
 
   build() {
     NavDestination() {
-      Column() {
+      Scroll() {
         Column() {
-          CustomText('Learning Statistics', 24, Color.Black)
-        }
-        .margin({ bottom: 20 })
+          Column() {
+            CustomText('Learning Statistics', 24)
+          }
+          .margin({ top: 20, bottom: 20 })
 
-        Column() {
-          this.StatRow('Current Streak', `${this.streak} days`, '#FF6B35')
-          this.StatRow('Total Learned', `${this.totalLearned} words`, '#00D4AA')
-          this.StatRow('Success Rate', `${this.accuracy}%`, '#444466')
+          Column() {
+            this.StatRow('Current Streak', `${this.streak} days`, '#FF6B35')
+            this.StatRow('Total Learned', `${this.totalLearned} words`, '#00D4AA')
+            this.StatRow('Success Rate', `${this.accuracy}%`, '#444466')
+          }
+          .width('100%')
+
+          if (this.achievements.length > 0) {
+              Column() {
+                  CustomText('Achievements', 20)
+                      .margin({top: 20, bottom: 10})
+
+                  Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center }) {
+                      ForEach(this.achievements, (achievement: string) => {
+                          Text(achievement)
+                              .padding(8)
+                              .margin(5)
+                              .backgroundColor('#EEE')
+                              .borderRadius(15)
+                              .fontSize(14)
+                              .fontColor(Color.Black)
+                              .border({width: 1, color: Color.Black})
+                      }, (achievement: string) => achievement)
+                  }
+              }
+              .width('100%')
+          }
+
+          Button('Go Back')
+            .onClick(() => {
+              this.pathStack.pop()
+            })
+            .margin({ top: 30, bottom: 20 })
         }
         .width('100%')
-
-        Button('Go Back')
-          .onClick(() => {
-            this.pathStack.pop()
-          })
-          .margin({ top: 30 })
       }
-      .height('100%')
-      .width('100%')
-      .backgroundColor('#fffff2ea')
-      .justifyContent(FlexAlign.Center)
-      .padding(20)
+      .scrollBar(BarState.Off)
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
     })
     .hideTitleBar(true)
+    .backgroundColor('#fffff2ea')
     .onBackPressed(() => {
         this.pathStack.pop()
         return true
