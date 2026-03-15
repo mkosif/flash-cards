@@ -1,5 +1,5 @@
 @Builder
-export function RectangularText(txt: string, size: number, color: Color = Color.White) {
+export function RectangularText(txt: string, size: number, color: Color = Color.Black) {
   Row() {
     Text(txt)
       .fontSize(size)

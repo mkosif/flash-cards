@@ -9,7 +9,11 @@ struct Index {
   wordLists: WordList[] = [
     new WordList('A1 Deutsch', 'A1DeutschWortliste'),
     new WordList('A1 Deutsch Animals', 'A1DeutschTiere'),
-    new WordList('A1 Deutsch Verbs', 'A1DeutschVerben')
+    new WordList('A1 Deutsch Verbs', 'A1DeutschVerben'),
+    new WordList('A1 English', 'A1English'),
+    new WordList('A1 Spanish', 'A1Spanish'),
+    new WordList('A1 French', 'A1French'),
+    new WordList('A1 Turkish', 'A1Turkish')
   ]
   @State selectedIndex: number = -1;
   @State remaining: Remaining = { learnedCount: 0, unlearnedCount: 0 };
@@ -44,12 +48,17 @@ struct Index {
             .fontWeight(FontWeight.Bold)
         }
         .bindMenu(this.MyMenu)
-        .height(20)
-        .background('#11ff30ff')
-        .margin({ bottom: 10 })
+        .height(30)
+        .padding({left: 10, right: 10})
+        .backgroundColor('#11ff30ff')
+        .margin({ bottom: 20 })
+        .justifyContent(FlexAlign.Center)
 
         Button('Start')
           .onClick(async () => {
+            if (this.selectedIndex === -1) {
+              return;
+            }
             let databaseManager: DatabaseManager = new DatabaseManager()
             try {
               await databaseManager.createStore(this.ctx, this.wordLists[this.selectedIndex].fileName)
@@ -59,8 +68,22 @@ struct Index {
               databaseManager.close();
               console.error(`Database error: ${e}`)
             }
-
           })
+
+        Row() {
+            Button('Stats')
+                .onClick(() => {
+                    this.pathStack.pushPathByName('StatisticsPage', null)
+                })
+                .margin(10)
+
+            Button('Settings')
+                .onClick(() => {
+                    this.pathStack.pushPathByName('SettingsPage', null)
+                })
+                .margin(10)
+        }
+        .margin({top: 20})
       }
       .height('100%')
       .width('100%')

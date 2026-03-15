@@ -16,14 +16,14 @@ struct SettingsPage {
     NavDestination() {
       Column() {
         Column() {
-          CustomText('Settings', 24, Color.White)
+          CustomText('Settings', 24, Color.Black)
         }
         .margin({ bottom: 20 })
 
         Column() {
           Row() {
             Text('Haptic Feedback')
-              .fontColor(Color.White)
+              .fontColor(Color.Black)
               .fontSize(16)
             Blank()
             Toggle({ type: ToggleType.Switch, isOn: this.hapticEnabled })
@@ -33,25 +33,27 @@ struct SettingsPage {
           }
           .width('100%')
           .padding(10)
-          .backgroundColor('#2D2D44')
+          .backgroundColor(Color.White)
           .borderRadius(10)
           .margin({ bottom: 10 })
+          .border({width: 1, color: Color.Black})
 
           Row() {
             Text('Daily Goal')
-              .fontColor(Color.White)
+              .fontColor(Color.Black)
               .fontSize(16)
             Blank()
             Counter() {
-                Text(this.dailyGoal.toString()).fontColor(Color.White)
+                Text(this.dailyGoal.toString()).fontColor(Color.Black)
             }
             .onInc(() => { this.dailyGoal++ })
             .onDec(() => { this.dailyGoal = Math.max(1, this.dailyGoal - 1) })
           }
           .width('100%')
           .padding(10)
-          .backgroundColor('#2D2D44')
+          .backgroundColor(Color.White)
           .borderRadius(10)
+          .border({width: 1, color: Color.Black})
         }
         .width('100%')
 
@@ -60,11 +62,10 @@ struct SettingsPage {
             this.pathStack.pop()
           })
           .margin({ top: 30 })
-          .backgroundColor('#2D2D44')
       }
       .height('100%')
       .width('100%')
-      .backgroundColor('#1A1A2E')
+      .backgroundColor('#fffff2ea')
       .justifyContent(FlexAlign.Center)
       .padding(20)
     }

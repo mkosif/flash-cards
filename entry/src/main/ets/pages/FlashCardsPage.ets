@@ -27,10 +27,10 @@ struct FlashCardsPage {
       Stack() {
         Column() {
           Text(this.remainingCount.learnedCount + ` cards learned`)
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .fontSize(12)
           Text(this.remainingCount.unlearnedCount + ` cards left`)
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .fontSize(12)
         }
         .width('100%')
@@ -44,7 +44,7 @@ struct FlashCardsPage {
               fontSize: { value: 12, unit: LengthUnit.PX },
               label: 'Go back',
               position: ArcButtonPosition.TOP_EDGE,
-              styleMode: ArcButtonStyleMode.EMPHASIZED_DARK,
+              styleMode: ArcButtonStyleMode.EMPHASIZED_LIGHT,
               onClick: (): void => {
                 console.info('Go back button pressed')
                 this.databaseManager.close()
@@ -72,14 +72,13 @@ struct FlashCardsPage {
             .width('55%')
           } else {
             Column() {
-              CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16, Color.White)
+              CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16, Color.Black)
               Button('Clear progress')
                 .onClick(async () => {
                   await this.databaseManager.setAllUnlearned()
                   this.databaseManager.close()
                   this.pathStack.pop()
                 })
-                .backgroundColor('#FF6B35')
                 .margin(5)
             }
             .height('55%')
@@ -90,12 +89,18 @@ struct FlashCardsPage {
 
         } else {
           Text('Loading...')
-            .fontColor(Color.White)
+            .fontColor(Color.Black)
             .fontSize(24)
         }
       }
       .height('100%')
       .width('100%')
+      .gesture(
+          PanGesture({ direction: PanDirection.Horizontal })
+              .onActionStart((event: GestureEvent) => {
+                  console.info('Horizontal swipe started, consuming event to prevent back navigation')
+              })
+      )
     }
     .onReady(async (context: NavDestinationContext) => {
       this.pathStack = context.pathStack
@@ -141,7 +146,7 @@ struct FlashCardsPage {
     .height('100%')
     .width('100%')
     .hideTitleBar(true)
-    .backgroundColor('#1A1A2E')
+    .backgroundColor('#fffff2ea')
     .onBackPressed(() => {
         return true;
     })

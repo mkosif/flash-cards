@@ -169,11 +169,10 @@ export struct FlashCard {
         angle: this.rotation,
         perspective: -800
       })
-      .backgroundColor('#2D2D44')
+      .backgroundColor(Color.White)
       .borderRadius(10)
-      .borderColor('#444466')
+      .borderColor(Color.Black)
       .borderWidth(2)
-      .shadow({ radius: 10, color: '#000000', offsetX: 5, offsetY: 5 })
     }
     .rotate({ angle: this.cardRotation, centerY: 1000 })
     .rotate({ x: 0, y: 1, z: 0, angle: this.cardTilt, perspective: -800 })
@@ -185,7 +184,6 @@ export struct FlashCard {
       switch (event.type) {
         case TouchType.Down:
           this.startX = event.touches[0].displayX;
-          this.startY = event.touches[0].displayY;
           break;
         case TouchType.Move:
           if (!this.swiped) {

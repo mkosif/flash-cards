@@ -24,7 +24,7 @@ struct StatisticsPage {
     NavDestination() {
       Column() {
         Column() {
-          CustomText('Learning Statistics', 24, Color.White)
+          CustomText('Learning Statistics', 24, Color.Black)
         }
         .margin({ bottom: 20 })
 
@@ -40,11 +40,10 @@ struct StatisticsPage {
             this.pathStack.pop()
           })
           .margin({ top: 30 })
-          .backgroundColor('#2D2D44')
       }
       .height('100%')
       .width('100%')
-      .backgroundColor('#1A1A2E')
+      .backgroundColor('#fffff2ea')
       .justifyContent(FlexAlign.Center)
       .padding(20)
     }
@@ -62,7 +61,7 @@ struct StatisticsPage {
   StatRow(label: string, value: string, color: string) {
     Row() {
       Text(label)
-        .fontColor(Color.White)
+        .fontColor(Color.Black)
         .fontSize(16)
       Blank()
       Text(value)
@@ -73,7 +72,8 @@ struct StatisticsPage {
     .width('100%')
     .padding(10)
     .margin({ bottom: 10 })
-    .backgroundColor('#2D2D44')
+    .backgroundColor(Color.White)
     .borderRadius(10)
+    .border({width: 1, color: Color.Black})
   }
 }
