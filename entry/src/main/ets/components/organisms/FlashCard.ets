@@ -57,7 +57,11 @@ export struct FlashCard {
       let speakParams: textToSpeech.SpeakParams = {
         requestId: Date.now().toString()
       };
-      this.ttsEngine.speak(text, speakParams);
+      try {
+        this.ttsEngine.speak(text, speakParams);
+      } catch (e) {
+        console.error(`TTS Speak Error: ${JSON.stringify(e)}`);
+      }
     }
   }
 

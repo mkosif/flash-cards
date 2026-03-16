@@ -337,10 +337,11 @@ export class DatabaseManager {
 
     const rdbStore = this.rdbStore;
     const tableName = this.tableName;
+    const today = new Date().toISOString().split('T')[0];
 
     try {
       const countPredicates = new relationalStore.RdbPredicates(tableName);
-      countPredicates.equalTo('learned', 0);
+      countPredicates.equalTo('learned', 0).and().notEqualTo('last_reviewed', today);
       if (excludedIds.length > 0) {
         countPredicates.notIn('id', excludedIds);
       }
@@ -369,7 +370,7 @@ export class DatabaseManager {
 
       for (const offset of offsetArray) {
         const wordPred = new relationalStore.RdbPredicates(tableName);
-        wordPred.equalTo('learned', 0);
+        wordPred.equalTo('learned', 0).and().notEqualTo('last_reviewed', today);
         if (excludedIds.length > 0) {
           wordPred.notIn('id', excludedIds);
         }
@@ -468,7 +469,7 @@ export class DatabaseManager {
 
       try {
         const learnedPredicates = new relationalStore.RdbPredicates(tableName);
-        learnedPredicates.equalTo('learned', 1);
+        learnedPredicates.equalTo('learned', 1).or().greaterThan('box_level', 1);
         rdbStore.query(
           learnedPredicates,
           ['COUNT(*)'],
@@ -487,7 +488,7 @@ export class DatabaseManager {
         );
 
         const unlearnedPredicates = new relationalStore.RdbPredicates(tableName);
-        unlearnedPredicates.equalTo('learned', 0);
+        unlearnedPredicates.equalTo('learned', 0).and().equalTo('box_level', 1);
         rdbStore.query(
           unlearnedPredicates,
           ['COUNT(*)'],
