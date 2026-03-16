@@ -35,7 +35,7 @@ struct FlashCardsPage {
         }
         .width('100%')
         .height('100%')
-        .padding({ bottom: 22 })
+        .padding({ bottom: 10 })
         .justifyContent(FlexAlign.End)
 
         Column() {
@@ -67,8 +67,8 @@ struct FlashCardsPage {
               .width('100%')
               .height('100%')
             }
-            .height('60%')
-            .width('60%')
+            .height('52%')
+            .width('52%')
             .margin({ top: '22%' })
           } else {
             Column() {
