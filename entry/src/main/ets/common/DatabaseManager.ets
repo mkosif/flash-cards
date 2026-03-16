@@ -454,6 +454,7 @@ export class DatabaseManager {
     }
     const rdbStore = this.rdbStore;
     const tableName = this.tableName;
+    const today = new Date().toISOString().split('T')[0];
 
     return new Promise<Remaining>((resolve, reject) => {
       let learnedCount: number = 0;
@@ -469,8 +470,8 @@ export class DatabaseManager {
 
       try {
         const learnedPredicates = new relationalStore.RdbPredicates(tableName);
-        // Scientific "learned": card has graduated through all boxes (learned=1)
-        learnedPredicates.equalTo('learned', 1);
+        // "Session Learned": card has graduated (learned=1) OR been reviewed today
+        learnedPredicates.equalTo('learned', 1).or().equalTo('last_reviewed', today);
         rdbStore.query(
           learnedPredicates,
           ['COUNT(*)'],
@@ -489,8 +490,11 @@ export class DatabaseManager {
         );
 
         const unlearnedPredicates = new relationalStore.RdbPredicates(tableName);
-        // Active learning: card is NOT yet marked as learned
-        unlearnedPredicates.equalTo('learned', 0);
+        // "Session Unlearned": card is NOT learned AND not reviewed today
+        unlearnedPredicates.equalTo('learned', 0)
+          .and().beginWrap()
+          .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
+          .endWrap();
         rdbStore.query(
           unlearnedPredicates,
           ['COUNT(*)'],
