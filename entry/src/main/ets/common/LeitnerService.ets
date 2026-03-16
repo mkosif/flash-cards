@@ -1,0 +1,46 @@
+import WordData from '../models/WordData';
+
+export class LeitnerService {
+  private static readonly INTERVALS = [1, 2, 4, 7, 14]; // Days for Box 1 to 5
+
+  static processReview(word: WordData, isCorrect: boolean): WordData {
+    const now = new Date();
+    word.lastReviewed = now.toISOString().split('T')[0];
+    word.reviewCount++;
+
+    if (isCorrect) {
+      word.correctCount++;
+      // Move to next box, max 5
+      if (word.boxLevel < 5) {
+        word.boxLevel++;
+      }
+      // Difficulty decrease on success
+      word.difficultyScore = Math.max(0, word.difficultyScore - 5);
+
+      // If box 5 and correct, mark as learned
+      if (word.boxLevel === 5) {
+          word.learned = true;
+      }
+    } else {
+      word.wrongCount++;
+      // Reset to Box 1 on failure
+      word.boxLevel = 1;
+      // Difficulty increase on failure
+      word.difficultyScore = Math.min(100, word.difficultyScore + 10);
+      word.learned = false;
+    }
+
+    const intervalDays = this.INTERVALS[word.boxLevel - 1];
+    const nextDate = new Date();
+    nextDate.setDate(now.getDate() + intervalDays);
+    word.nextReviewDate = nextDate.toISOString().split('T')[0];
+
+    return word;
+  }
+
+  static getBoxInterval(boxLevel: number): number {
+    if (boxLevel < 1) return this.INTERVALS[0];
+    if (boxLevel > 5) return this.INTERVALS[4];
+    return this.INTERVALS[boxLevel - 1];
+  }
+}

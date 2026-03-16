@@ -13,6 +13,7 @@ export default class WordData {
   difficultyScore: number = 50.0
   lastReviewed: string = ''
   category: string = ''
+  imageSrc: string = ''
 
   constructor(
     id: number,
@@ -28,7 +29,8 @@ export default class WordData {
     wrongCount: number = 0,
     difficultyScore: number = 50.0,
     lastReviewed: string = '',
-    category: string = ''
+    category: string = '',
+    imageSrc: string = ''
   ) {
     this.id = id
     this.article = article
@@ -44,6 +46,7 @@ export default class WordData {
     this.difficultyScore = difficultyScore
     this.lastReviewed = lastReviewed
     this.category = category
+    this.imageSrc = imageSrc
   }
 
   public toString() {

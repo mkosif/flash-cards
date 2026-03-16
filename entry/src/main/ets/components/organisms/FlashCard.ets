@@ -3,6 +3,8 @@ import { RectangularText } from '../atoms/RectangularText';
 import { CardBack } from '../molecules/CardBack';
 import { CardFront } from '../molecules/CardFront'
 import { vibrator } from '@kit.SensorServiceKit';
+import { textToSpeech } from '@kit.CoreSpeechKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
 @Component
 export struct FlashCard {
@@ -23,9 +25,41 @@ export struct FlashCard {
   @State opacityRight: number = 0;
 
   @StorageProp('hapticEnabled') hapticEnabled: boolean = true;
+  private ttsEngine: textToSpeech.TextToSpeechEngine | null = null;
 
   aboutToAppear() {
     this.uiCtx = this.getUIContext();
+    this.initTTS();
+  }
+
+  private initTTS() {
+    let initParams: textToSpeech.CreateEngineParams = {
+      language: 'de-DE',
+      person: 0,
+      online: 1,
+      extraParams: { style: 'interaction-broadcast', locate: 'DE' }
+    };
+    try {
+      textToSpeech.createEngine(initParams, (err: BusinessError, engine: textToSpeech.TextToSpeechEngine) => {
+        if (!err) {
+          this.ttsEngine = engine;
+        } else {
+          console.error(`TTS Engine creation failed: ${JSON.stringify(err)}`);
+        }
+      });
+    } catch (e) {
+      console.error(`TTS Init Error: ${JSON.stringify(e)}`);
+    }
+  }
+
+  private speak(text: string) {
+    if (this.ttsEngine) {
+      let speakParams: textToSpeech.SpeakParams = {
+        requestId: Date.now().toString(),
+        utterance: text
+      };
+      this.ttsEngine.speak(text, speakParams);
+    }
   }
 
   private triggerHaptic(duration: number) {
@@ -110,6 +144,10 @@ export struct FlashCard {
         this.front = !this.front;
         this.rotationCount++;
 
+        if (!this.front) {
+          this.speak(this.wordData.word);
+        }
+
         this.uiCtx?.animateTo(
           {
             duration: 250,
@@ -130,12 +168,12 @@ export struct FlashCard {
       Stack() {
 
         Column() {
-          CardFront(this.wordData.article, this.wordData.word, this.wordData.example)
+          CardFront(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.imageSrc)
         }
         .visibility(this.front ? Visibility.Visible : Visibility.Hidden)
 
         Column() {
-          CardBack(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.meaning)
+          CardBack(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.meaning, this.wordData.imageSrc)
         }
         .visibility(!this.front ? Visibility.Visible : Visibility.Hidden)
 
@@ -174,6 +212,8 @@ export struct FlashCard {
       .borderColor('#444466')
       .borderWidth(2)
       .shadow({ radius: 10, color: '#000000', offsetX: 5, offsetY: 5 })
+      .accessibilityGroup(true)
+      .accessibilityText(`${this.front ? 'Front' : 'Back'} of card: ${this.wordData.word}. Double tap to flip.`)
     }
     .rotate({ angle: this.cardRotation, centerY: 1000 })
     .rotate({ x: 0, y: 1, z: 0, angle: this.cardTilt, perspective: -800 })

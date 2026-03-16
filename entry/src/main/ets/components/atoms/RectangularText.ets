@@ -12,4 +12,6 @@ export function RectangularText(txt: string, size: number, color: Color = Color.
     color: color,
     radius: 5
   })
+  .accessibilityGroup(true)
+  .accessibilityText(txt)
 }

@@ -1,4 +1,5 @@
 import { DatabaseManager, Remaining } from '../../common/DatabaseManager';
+import { LeitnerService } from '../../common/LeitnerService';
 import WordData from '../../models/WordData';
 import { FlashCard } from '../organisms/FlashCard';
 
@@ -22,18 +23,67 @@ export struct Cards {
   @State order: number[] = [2, 1, 0];
   @Link remainingCount: Remaining;
 
-  async setCardAsLearnedAndGetNewData(index: number, learned: boolean) {
-    if (learned) {
-      await this.databaseManager.setLearnedById(this.wordDataList[index].id)
-      this.remainingCount = await this.databaseManager.getWordCounts()
+  async setCardAsLearnedAndGetNewData(index: number, isCorrect: boolean) {
+    let word = this.wordDataList[index];
+    LeitnerService.processReview(word, isCorrect);
+    await this.databaseManager.updateWordProgress(
+      word.id,
+      word.boxLevel,
+      word.nextReviewDate,
+      word.reviewCount,
+      word.correctCount,
+      word.wrongCount,
+      word.difficultyScore,
+      word.lastReviewed,
+      word.learned
+    );
+
+    // Update AppStorage Stats
+    let totalLearned = AppStorage.get<number>('totalLearned') || 0;
+    if (word.learned) {
+      AppStorage.setOrCreate('totalLearned', totalLearned + 1);
     }
+
+    let correctTotal = AppStorage.get<number>('correctTotal') || 0;
+    let wrongTotal = AppStorage.get<number>('wrongTotal') || 0;
+    if (isCorrect) {
+      AppStorage.setOrCreate('correctTotal', correctTotal + 1);
+    } else {
+      AppStorage.setOrCreate('wrongTotal', wrongTotal + 1);
+    }
+    let accuracy = Math.floor(((correctTotal + (isCorrect ? 1 : 0)) / (correctTotal + wrongTotal + 1)) * 100);
+    AppStorage.setOrCreate('accuracy', accuracy);
+
+    // Update Streak
+    const today = new Date().toISOString().split('T')[0];
+    const lastDate = AppStorage.get<string>('lastStudyDate');
+    let streak = AppStorage.get<number>('streak') || 0;
+
+    if (lastDate !== today) {
+      if (lastDate) {
+        const last = new Date(lastDate);
+        const curr = new Date(today);
+        const diffDays = Math.floor((curr.getTime() - last.getTime()) / (1000 * 3600 * 24));
+        if (diffDays === 1) {
+          streak++;
+        } else if (diffDays > 1) {
+          streak = 1;
+        }
+      } else {
+        streak = 1;
+      }
+      AppStorage.setOrCreate('streak', streak);
+      AppStorage.setOrCreate('lastStudyDate', today);
+    }
+
+    this.remainingCount = await this.databaseManager.getWordCounts()
     const processItemAsync = async (): Promise<void> => {
 
       let list: WordData[] | null =
         await this.databaseManager.getRandomUnlearnedWord(1, [this.data0.id, this.data1.id, this.data2.id])
       if (list === null || list[0] === undefined) {
         console.info(`No new card!`)
-        if (learned) {
+        if (isCorrect) {
           this.visibilities[index] = false;
         }
         return;

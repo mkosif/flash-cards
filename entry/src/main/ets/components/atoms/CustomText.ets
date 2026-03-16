@@ -2,4 +2,5 @@
   Text(`${txt}`)
     .fontSize(size)
     .fontColor(fontColor)
+    .accessibilityText(txt)
 }

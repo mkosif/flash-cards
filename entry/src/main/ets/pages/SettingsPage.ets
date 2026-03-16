@@ -1,5 +1,6 @@
 import { CustomText } from '../components/atoms/CustomText';
-import { notificationManager } from '@kit.NotificationKit';
+import { BusinessError } from '@kit.BasicServicesKit';
+import notificationManager from '@ohos.notificationManager';
 
 @Builder
 function settingsPageBuilder() {
@@ -21,7 +22,7 @@ struct SettingsPage {
         const request: notificationManager.NotificationRequest = {
           id: 1,
           content: {
-            contentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT as any,
+            notificationContentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
             normal: {
               title: 'Time to study!',
               text: 'Dont forget to review your flash cards today.',
@@ -30,8 +31,11 @@ struct SettingsPage {
           },
           deliveryTime: new Date().getTime() + 5000
         };
-        await notificationManager.publish(request);
-        console.info('Notification published');
+        notificationManager.publish(request, (err: BusinessError) => {
+          if (err) {
+            console.error('Notification publish failed: ' + JSON.stringify(err));
+          }
+        });
       } catch (e) {
         console.error('Notification failed: ' + JSON.stringify(e));
       }

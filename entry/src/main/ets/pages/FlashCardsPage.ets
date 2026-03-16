@@ -72,7 +72,9 @@ struct FlashCardsPage {
             .width('55%')
           } else {
             Column() {
-              CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16, Color.White)
+              Column() {
+                  CustomText('Congratulations!\nYou have learned all the words!\n🎉🎉🎉', 16, Color.White)
+              }
               Button('Clear progress')
                 .onClick(async () => {
                   await this.databaseManager.setAllUnlearned()
@@ -96,12 +98,11 @@ struct FlashCardsPage {
       }
       .height('100%')
       .width('100%')
-      .gesture(
-          PanGesture({ direction: PanDirection.Left })
-              .onActionStart(() => {
-                  console.info('Consuming left swipe to prevent back navigation')
-              }),
-          GestureOrder.Parallel
+      .parallelGesture(
+        PanGesture({ direction: PanDirection.Left })
+          .onActionStart(() => {
+            console.info('Consuming left swipe to prevent back navigation')
+          })
       )
     }
     .onReady(async (context: NavDestinationContext) => {
@@ -115,7 +116,10 @@ struct FlashCardsPage {
         const idx = ids[ids.length - 1];
         this.databaseManager = (this.pathStack.getParamByIndex(idx) as DatabaseManagerParam).databaseManager;
 
-        let list: WordData[] | null = await this.databaseManager.getRandomUnlearnedWord(3)
+        let list: WordData[] | null = await this.databaseManager.getDueWords()
+        if (list === null || list.length === 0) {
+          list = await this.databaseManager.getRandomUnlearnedWord(3)
+        }
 
         if (list !== null && list.length > 0) {
           this.wordDataList[0] = list[0]
