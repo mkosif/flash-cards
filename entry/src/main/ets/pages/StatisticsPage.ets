@@ -76,9 +76,9 @@ struct StatisticsPage {
       }
       .scrollBar(BarState.Off)
       .parallelGesture(
-        PanGesture({ direction: PanDirection.Left })
+        PanGesture({ direction: PanDirection.Horizontal })
           .onActionStart(() => {
-            console.info('Consuming left swipe to prevent back navigation')
+            console.info('Consuming horizontal swipe to prevent back navigation')
           })
       )
     }

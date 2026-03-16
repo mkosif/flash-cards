@@ -140,9 +140,9 @@ struct Index {
     .backgroundColor('#1A1A2E')
     .mode(NavigationMode.Stack)
     .parallelGesture(
-      PanGesture({ direction: PanDirection.Left })
+      PanGesture({ direction: PanDirection.Horizontal })
         .onActionStart(() => {
-          console.info('Consuming left swipe to prevent back navigation')
+          console.info('Consuming horizontal swipe to prevent back navigation')
         })
     )
   }
