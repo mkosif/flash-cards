@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "header": {
+    "title": "A1 Türkçe Kelime Listesi",
+    "language": "tr",
+    "targetLanguage": "en",
+    "level": "A1"
+  },
+  "data": [
+    { "article": "", "word": "Merhaba", "meaning": "Hello", "example": "Herkese merhaba!" },
+    { "article": "", "word": "Ev", "meaning": "House", "example": "Evimiz çok güzel." },
+    { "article": "", "word": "Arkadaş", "meaning": "Friend", "example": "O benim en iyi arkadaşım." },
+    { "article": "", "word": "Ekmek", "meaning": "Bread", "example": "Taze ekmek aldım." },
+    { "article": "", "word": "Kitap", "meaning": "Book", "example": "Kitap okumayı seviyorum." },
+    { "article": "", "word": "Kedi", "meaning": "Cat", "example": "Kedim bütün gün uyur." },
+    { "article": "", "word": "Köpek", "meaning": "Dog", "example": "Köpeğim bahçede oynuyor." },
+    { "article": "", "word": "Güneş", "meaning": "Sun", "example": "Bugün güneş parlıyor." },
+    { "article": "", "word": "Su", "meaning": "Water", "example": "Bir bardak su lütfen." },
+    { "article": "", "word": "Şehir", "meaning": "City", "example": "İstanbul çok büyük bir şehir." }
+  ]
+}

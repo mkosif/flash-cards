@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "header": {
+    "title": "A1 English Word List",
+    "language": "en",
+    "targetLanguage": "de",
+    "level": "A1"
+  },
+  "data": [
+    { "article": "", "word": "Apple", "meaning": "Apfel", "example": "I eat an apple." },
+    { "article": "", "word": "Book", "meaning": "Buch", "example": "Read a book." },
+    { "article": "", "word": "Car", "meaning": "Auto", "example": "Drive a car." },
+    { "article": "", "word": "Door", "meaning": "Tür", "example": "Open the door." },
+    { "article": "", "word": "Egg", "meaning": "Ei", "example": "Cook an egg." },
+    { "article": "", "word": "Friend", "meaning": "Freund", "example": "Meet a friend." },
+    { "article": "", "word": "Game", "meaning": "Spiel", "example": "Play a game." },
+    { "article": "", "word": "House", "meaning": "Haus", "example": "Stay at home." },
+    { "article": "", "word": "Ice", "meaning": "Eis", "example": "Ice is cold." },
+    { "article": "", "word": "Juice", "meaning": "Saft", "example": "Drink some juice." }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "header": {
+    "title": "A1 French Word List",
+    "language": "fr",
+    "targetLanguage": "en",
+    "level": "A1"
+  },
+  "data": [
+    { "article": "le", "word": "Bonjour", "meaning": "Hello", "example": "Bonjour tout le monde!" },
+    { "article": "la", "word": "Maison", "meaning": "House", "example": "C'est une grande maison." },
+    { "article": "l'", "word": "Ami", "meaning": "Friend", "example": "Il est mon meilleur ami." },
+    { "article": "le", "word": "Pain", "meaning": "Bread", "example": "J'achète du pain." },
+    { "article": "le", "word": "Livre", "meaning": "Book", "example": "Le livre est sur la table." },
+    { "article": "le", "word": "Chat", "meaning": "Cat", "example": "Le chat noir dort." },
+    { "article": "le", "word": "Chien", "meaning": "Dog", "example": "Mon chien est petit." },
+    { "article": "le", "word": "Soleil", "meaning": "Sun", "example": "Le soleil brille." },
+    { "article": "l'", "word": "Eau", "meaning": "Water", "example": "Je voudrais de l'eau." },
+    { "article": "la", "word": "Ville", "meaning": "City", "example": "Paris est une belle ville." }
+  ]
+}

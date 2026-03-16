@@ -56,33 +56,7 @@ export interface DatabaseManagerParam {
 }
 
 async function doRand(): Promise<number> {
-  try {
-    let rand = cryptoFramework.createRandom();
-    let seed = new Uint8Array([1, 2, 3]);
-    rand.setSeed({ data: seed });
-
-    const len = 12;
-    const randBlob = await rand.generateRandom(len);
-
-    const bytes = randBlob.data;
-
-    // Convert bytes (Uint8Array) → BigInt
-    let value = 0n;
-    for (let i = 0; i < bytes.length; i++) {
-      value = (value << 8n) + BigInt(bytes[i]);
-    }
-
-    // max for N bytes = 2^(8N) - 1
-    const max = (1n << BigInt(len * 8)) - 1n;
-
-    // Normalize 0–1 by dividing BigInts, then converting to Number
-    const normalized = Number(value) / Number(max);
-
-    return normalized;
-  } catch (e) {
-    console.error(`doRand failed: ${JSON.stringify(e)}`);
-    return Math.random();
-  }
+  return Math.random();
 }
 
 export class DatabaseManager {
@@ -341,18 +315,36 @@ export class DatabaseManager {
 
     try {
       const countPredicates = new relationalStore.RdbPredicates(tableName);
-      countPredicates.equalTo('learned', 0).and().notEqualTo('last_reviewed', today);
+      countPredicates.equalTo('learned', 0)
+        .and().beginWrap()
+        .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
+        .endWrap();
       if (excludedIds.length > 0) {
         countPredicates.notIn('id', excludedIds);
       }
 
-      const countResult = await rdbStore.query(countPredicates, ['COUNT(*)']);
+      let countResult = await rdbStore.query(countPredicates, ['COUNT(*)']);
       countResult.goToFirstRow();
-      const totalUnlearned = countResult.getLong(0);
+      let totalUnlearned = countResult.getLong(0);
       countResult.close();
 
-      if (totalUnlearned === 0) {
-        return null;
+      const useFallback = totalUnlearned === 0;
+
+      if (useFallback) {
+        // Fallback: If no cards are available for today, show any unlearned cards
+        const fallbackPredicates = new relationalStore.RdbPredicates(tableName);
+        fallbackPredicates.equalTo('learned', 0);
+        if (excludedIds.length > 0) {
+          fallbackPredicates.notIn('id', excludedIds);
+        }
+        countResult = await rdbStore.query(fallbackPredicates, ['COUNT(*)']);
+        countResult.goToFirstRow();
+        totalUnlearned = countResult.getLong(0);
+        countResult.close();
+
+        if (totalUnlearned === 0) {
+          return null;
+        }
       }
 
       const N = Math.min(requiredCount, totalUnlearned);
@@ -370,7 +362,12 @@ export class DatabaseManager {
 
       for (const offset of offsetArray) {
         const wordPred = new relationalStore.RdbPredicates(tableName);
-        wordPred.equalTo('learned', 0).and().notEqualTo('last_reviewed', today);
+        wordPred.equalTo('learned', 0);
+        if (!useFallback) {
+          wordPred.and().beginWrap()
+            .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
+            .endWrap();
+        }
         if (excludedIds.length > 0) {
           wordPred.notIn('id', excludedIds);
         }
@@ -418,7 +415,10 @@ export class DatabaseManager {
     try {
       const now = new Date().toISOString().split('T')[0];
       const predicates = new relationalStore.RdbPredicates(this.tableName);
-      predicates.equalTo('learned', 0).and().lessThanOrEqualTo('next_review_date', now);
+      predicates.equalTo('learned', 0)
+        .and().beginWrap()
+        .isNull('next_review_date').or().equalTo('next_review_date', '').or().lessThanOrEqualTo('next_review_date', now)
+        .endWrap();
 
       const resultSet = await this.rdbStore.query(predicates, ['id', 'article', 'word', 'meaning', 'example', 'learned', 'box_level', 'next_review_date', 'review_count', 'correct_count', 'wrong_count', 'difficulty_score', 'last_reviewed', 'category']);
       const results: WordData[] = [];
@@ -469,7 +469,8 @@ export class DatabaseManager {
 
       try {
         const learnedPredicates = new relationalStore.RdbPredicates(tableName);
-        learnedPredicates.equalTo('learned', 1).or().greaterThan('box_level', 1);
+        // Scientific "learned": card has graduated through all boxes (learned=1)
+        learnedPredicates.equalTo('learned', 1);
         rdbStore.query(
           learnedPredicates,
           ['COUNT(*)'],
@@ -488,7 +489,8 @@ export class DatabaseManager {
         );
 
         const unlearnedPredicates = new relationalStore.RdbPredicates(tableName);
-        unlearnedPredicates.equalTo('learned', 0).and().equalTo('box_level', 1);
+        // Active learning: card is NOT yet marked as learned
+        unlearnedPredicates.equalTo('learned', 0);
         rdbStore.query(
           unlearnedPredicates,
           ['COUNT(*)'],

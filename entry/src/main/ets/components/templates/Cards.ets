@@ -5,17 +5,17 @@ import { FlashCard } from '../organisms/FlashCard';
 
 @Component
 export struct Cards {
-  @Link wordDataList: WordData[];
+  @Link @Watch('onDataUpdate') wordDataList: WordData[];
   @Link databaseManager: DatabaseManager;
-  @State data0: WordData = this.wordDataList[0]
+  @State data0: WordData = new WordData(-1, '', '', '', '', false)
   @State isActivate0: boolean = false
   @State @Watch('onSwiped0') swiped0: boolean = false
   @State swipeDirection0: boolean = false;
-  @State data1: WordData = this.wordDataList[1]
+  @State data1: WordData = new WordData(-2, '', '', '', '', false)
   @State isActivate1: boolean = false
   @State @Watch('onSwiped1') swiped1: boolean = false
   @State swipeDirection1: boolean = false;
-  @State data2: WordData = this.wordDataList[2]
+  @State data2: WordData = new WordData(-3, '', '', '', '', false)
   @State isActivate2: boolean = false
   @State @Watch('onSwiped2') swiped2: boolean = false
   @State swipeDirection2: boolean = false;
@@ -40,6 +40,7 @@ export struct Cards {
 
     // Update AppStorage Stats
     let totalLearned = AppStorage.get<number>('totalLearned') || 0;
+    // Word is learned ONLY if it graduates to fully learned state
     if (word.learned) {
       AppStorage.setOrCreate('totalLearned', totalLearned + 1);
     }
@@ -127,8 +128,16 @@ export struct Cards {
     }
   }
 
-  aboutToAppear(): void {
+  onDataUpdate() {
+    console.info(`Cards onDataUpdate. wordDataList length: ${this.wordDataList.length}`)
+    if (this.wordDataList.length > 0) this.data0 = this.wordDataList[0]
+    if (this.wordDataList.length > 1) this.data1 = this.wordDataList[1]
+    if (this.wordDataList.length > 2) this.data2 = this.wordDataList[2]
     this.activateCards()
+  }
+
+  aboutToAppear(): void {
+    this.onDataUpdate()
   }
 
   build() {
@@ -136,37 +145,37 @@ export struct Cards {
       ForEach(this.order, (index: number) => {
         if (index === 0) {
           FlashCard({
-            wordData: this.data0,
-            isActive: this.isActivate0,
-            swiped: this.swiped0,
-            swipeDirection: this.swipeDirection0
+            wordData: $data0,
+            isActive: $isActivate0,
+            swiped: $swiped0,
+            swipeDirection: $swipeDirection0
           })
             .width('100%')
             .height('100%')
             .visibility(this.visibilities[0] ? Visibility.Visible : Visibility.Hidden)
         } else if (index === 1) {
           FlashCard({
-            wordData: this.data1,
-            isActive: this.isActivate1,
-            swiped: this.swiped1,
-            swipeDirection: this.swipeDirection1
+            wordData: $data1,
+            isActive: $isActivate1,
+            swiped: $swiped1,
+            swipeDirection: $swipeDirection1
           })
             .width('100%')
             .height('100%')
             .visibility(this.visibilities[1] ? Visibility.Visible : Visibility.Hidden)
         } else {
           FlashCard({
-            wordData: this.data2,
-            isActive: this.isActivate2,
-            swiped: this.swiped2,
-            swipeDirection: this.swipeDirection2
+            wordData: $data2,
+            isActive: $isActivate2,
+            swiped: $swiped2,
+            swipeDirection: $swipeDirection2
           })
             .width('100%')
             .height('100%')
             .visibility(this.visibilities[2] ? Visibility.Visible : Visibility.Hidden)
         }
       },
-        (index: number) => (this.wordDataList[index]?.id ?? index).toString())
+        (index: number) => `${index}_${this.wordDataList[index]?.id ?? index}`)
 
     }
     .width('100%')

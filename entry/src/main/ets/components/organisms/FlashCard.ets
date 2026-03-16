@@ -102,10 +102,13 @@ export struct FlashCard {
   }
 
   swipeRight() {
-    this.triggerHaptic(200); // Study again feedback
+    this.triggerHaptic(50); // Got it feedback
+    setTimeout(() => {
+        this.triggerHaptic(50);
+    }, 100);
     this.swipeAndDo(180, () => {
       this.cardRotation = 0
-      this.swipeDirection = false // Red action
+      this.swipeDirection = true // Green action
       this.swiped = true
       this.opacityRight = 0
       this.front = true
@@ -114,13 +117,10 @@ export struct FlashCard {
   }
 
   swipeLeft() {
-    this.triggerHaptic(50); // Got it feedback
-    setTimeout(() => {
-        this.triggerHaptic(50);
-    }, 100);
+    this.triggerHaptic(200); // Study again feedback
     this.swipeAndDo(-180, () => {
       this.cardRotation = 0
-      this.swipeDirection = true // Green action
+      this.swipeDirection = false // Red action
       this.swiped = true
       this.opacityRight = 0
       this.front = true
@@ -174,11 +174,15 @@ export struct FlashCard {
           CardFront(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.imageSrc)
         }
         .visibility(this.front ? Visibility.Visible : Visibility.Hidden)
+        .width('100%')
+        .height('100%')
 
         Column() {
           CardBack(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.meaning, this.wordData.imageSrc)
         }
         .visibility(!this.front ? Visibility.Visible : Visibility.Hidden)
+        .width('100%')
+        .height('100%')
 
         Column() {
           RectangularText(`Got it`, 15, Color.Green)
@@ -188,7 +192,7 @@ export struct FlashCard {
         .rotate({
           angle: -40
         })
-        .opacity(-this.opacityRight)
+        .opacity(this.opacityRight > 0 ? this.opacityRight : 0)
 
         Column() {
           RectangularText(`Study again`, 15, Color.Red)
@@ -198,7 +202,7 @@ export struct FlashCard {
         .rotate({
           angle: 40
         })
-        .opacity(this.opacityRight)
+        .opacity(this.opacityRight < 0 ? -this.opacityRight : 0)
       }
       .onClick((event: ClickEvent) => {
         if (this.isActive) {
@@ -215,6 +219,8 @@ export struct FlashCard {
       .borderColor('#444466')
       .borderWidth(2)
       .shadow({ radius: 10, color: '#000000', offsetX: 5, offsetY: 5 })
+      .width('100%')
+      .height('100%')
       .accessibilityGroup(true)
       .accessibilityText(`${this.front ? 'Front' : 'Back'} of card: ${this.wordData.word}. Double tap to flip.`)
     }

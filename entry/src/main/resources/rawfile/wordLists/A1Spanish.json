@@ -1,0 +1,21 @@
+{
+  "version": "1",
+  "header": {
+    "title": "A1 Spanish Word List",
+    "language": "es",
+    "targetLanguage": "en",
+    "level": "A1"
+  },
+  "data": [
+    { "article": "el", "word": "Hola", "meaning": "Hello", "example": "¡Hola! ¿Cómo estás?" },
+    { "article": "la", "word": "Casa", "meaning": "House", "example": "Mi casa es su casa." },
+    { "article": "el", "word": "Amigo", "meaning": "Friend", "example": "Él es mi mejor amigo." },
+    { "article": "la", "word": "Comida", "meaning": "Food", "example": "La comida está rica." },
+    { "article": "el", "word": "Libro", "meaning": "Book", "example": "Leo un libro interesante." },
+    { "article": "el", "word": "Perro", "meaning": "Dog", "example": "El perro corre rápido." },
+    { "article": "el", "word": "Gato", "meaning": "Cat", "example": "Mi gato duerme mucho." },
+    { "article": "el", "word": "Sol", "meaning": "Sun", "example": "Hace mucho sol hoy." },
+    { "article": "la", "word": "Agua", "meaning": "Water", "example": "Bebo un vaso de agua." },
+    { "article": "la", "word": "Ciudad", "meaning": "City", "example": "Madrid es una ciudad grande." }
+  ]
+}

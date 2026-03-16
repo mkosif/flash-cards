@@ -61,15 +61,16 @@ struct FlashCardsPage {
           if (this.remainingCount.unlearnedCount !== 0) {
             Column() {
               Cards({
-                wordDataList: this.wordDataList,
-                databaseManager: this.databaseManager,
-                visibilities: this.initalVisibilities,
-                remainingCount: this.remainingCount
+                wordDataList: $wordDataList,
+                databaseManager: $databaseManager,
+                visibilities: $initalVisibilities,
+                remainingCount: $remainingCount
               })
-
+              .width('100%')
+              .height('100%')
             }
-            .height('55%')
-            .width('55%')
+            .height('70%')
+            .width('70%')
           } else {
             Column() {
               Column() {
