@@ -54,8 +54,6 @@ struct FlashCardsPage {
           })
             .padding(0)
         }
-        .height('100%')
-        .width('100%')
 
         if (this.dataLoaded) {
           if (this.remainingCount.unlearnedCount !== 0) {
@@ -69,9 +67,9 @@ struct FlashCardsPage {
               .width('100%')
               .height('100%')
             }
-            .height('70%')
-            .width('70%')
-            .margin({ top: '15%' })
+            .height('60%')
+            .width('60%')
+            .margin({ top: '22%' })
           } else {
             Column() {
               Column() {
