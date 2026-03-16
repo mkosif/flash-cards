@@ -110,7 +110,7 @@ struct SettingsPage {
             .backgroundColor('#2D2D44')
         }
         .width('100%')
-        .padding({ top: 40, bottom: 40, left: 20, right: 20 })
+        .padding({ top: 40, bottom: 80, left: 20, right: 20 })
       }
       .scrollBar(BarState.Off)
       .height('100%')
@@ -120,7 +120,8 @@ struct SettingsPage {
         PanGesture({ direction: PanDirection.Horizontal })
           .onActionStart(() => {
             console.info('Consuming horizontal swipe to prevent back navigation')
-          })
+          }),
+        GestureMode.Exclusive
       )
     }
     .onReady((context: NavDestinationContext) => {

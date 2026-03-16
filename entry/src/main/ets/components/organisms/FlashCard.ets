@@ -98,13 +98,10 @@ export struct FlashCard {
   }
 
   swipeRight() {
-    this.triggerHaptic(50);
-    setTimeout(() => {
-        this.triggerHaptic(50);
-    }, 100);
+    this.triggerHaptic(200); // Study again feedback
     this.swipeAndDo(180, () => {
       this.cardRotation = 0
-      this.swipeDirection = true
+      this.swipeDirection = false // Red action
       this.swiped = true
       this.opacityRight = 0
       this.front = true
@@ -113,10 +110,13 @@ export struct FlashCard {
   }
 
   swipeLeft() {
-    this.triggerHaptic(200);
+    this.triggerHaptic(50); // Got it feedback
+    setTimeout(() => {
+        this.triggerHaptic(50);
+    }, 100);
     this.swipeAndDo(-180, () => {
       this.cardRotation = 0
-      this.swipeDirection = false
+      this.swipeDirection = true // Green action
       this.swiped = true
       this.opacityRight = 0
       this.front = true
@@ -184,7 +184,7 @@ export struct FlashCard {
         .rotate({
           angle: -40
         })
-        .opacity(this.opacityRight)
+        .opacity(-this.opacityRight)
 
         Column() {
           RectangularText(`Study again`, 15, Color.Red)
@@ -194,7 +194,7 @@ export struct FlashCard {
         .rotate({
           angle: 40
         })
-        .opacity(-this.opacityRight)
+        .opacity(this.opacityRight)
       }
       .onClick((event: ClickEvent) => {
         if (this.isActive) {

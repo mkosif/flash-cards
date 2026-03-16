@@ -72,14 +72,15 @@ struct StatisticsPage {
             .backgroundColor('#2D2D44')
         }
         .width('100%')
-        .padding({ top: 40, bottom: 40 })
+        .padding({ top: 40, bottom: 80 })
       }
       .scrollBar(BarState.Off)
       .parallelGesture(
         PanGesture({ direction: PanDirection.Horizontal })
           .onActionStart(() => {
             console.info('Consuming horizontal swipe to prevent back navigation')
-          })
+          }),
+        GestureMode.Exclusive
       )
     }
     .onReady((context: NavDestinationContext) => {

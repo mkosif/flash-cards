@@ -104,7 +104,8 @@ struct AddWordPage {
         PanGesture({ direction: PanDirection.Horizontal })
           .onActionStart(() => {
             console.info('Consuming horizontal swipe to prevent back navigation')
-          })
+          }),
+        GestureMode.Exclusive
       )
     }
     .onReady(async (context: NavDestinationContext) => {
