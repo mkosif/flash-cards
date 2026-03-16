@@ -55,8 +55,7 @@ export struct FlashCard {
   private speak(text: string) {
     if (this.ttsEngine) {
       let speakParams: textToSpeech.SpeakParams = {
-        requestId: Date.now().toString(),
-        utterance: text
+        requestId: Date.now().toString()
       };
       this.ttsEngine.speak(text, speakParams);
     }

@@ -30,7 +30,7 @@ export class LeitnerService {
       word.learned = false;
     }
 
-    const intervalDays = this.INTERVALS[word.boxLevel - 1];
+    const intervalDays = LeitnerService.INTERVALS[word.boxLevel - 1];
     const nextDate = new Date();
     nextDate.setDate(now.getDate() + intervalDays);
     word.nextReviewDate = nextDate.toISOString().split('T')[0];
@@ -39,8 +39,8 @@ export class LeitnerService {
   }
 
   static getBoxInterval(boxLevel: number): number {
-    if (boxLevel < 1) return this.INTERVALS[0];
-    if (boxLevel > 5) return this.INTERVALS[4];
-    return this.INTERVALS[boxLevel - 1];
+    if (boxLevel < 1) return LeitnerService.INTERVALS[0];
+    if (boxLevel > 5) return LeitnerService.INTERVALS[4];
+    return LeitnerService.INTERVALS[boxLevel - 1];
   }
 }
