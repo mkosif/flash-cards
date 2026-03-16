@@ -42,7 +42,7 @@ struct AddWordPage {
       Scroll() {
         Column() {
           Column() {
-              CustomText('Add New Word', 24)
+              CustomText('Add New Word', 24, Color.White)
           }
           .margin({ top: 20, bottom: 20 })
 
@@ -50,29 +50,33 @@ struct AddWordPage {
             .onChange((v) => this.article = v)
             .margin({ bottom: 10 })
             .width('90%')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .placeholderColor(Color.Gray)
+            .backgroundColor('#2D2D44')
 
           TextInput({ placeholder: 'Word', text: this.word })
             .onChange((v) => this.word = v)
             .margin({ bottom: 10 })
             .width('90%')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .placeholderColor(Color.Gray)
+            .backgroundColor('#2D2D44')
 
           TextInput({ placeholder: 'Meaning', text: this.meaning })
             .onChange((v) => this.meaning = v)
             .margin({ bottom: 10 })
             .width('90%')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .placeholderColor(Color.Gray)
+            .backgroundColor('#2D2D44')
 
           TextInput({ placeholder: 'Example Sentence', text: this.example })
             .onChange((v) => this.example = v)
             .margin({ bottom: 20 })
             .width('90%')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .placeholderColor(Color.Gray)
+            .backgroundColor('#2D2D44')
 
           Button('Save Word')
             .onClick(() => this.handleSave())
@@ -81,7 +85,7 @@ struct AddWordPage {
 
           Text(this.feedback)
             .margin(10)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
 
           Button('Go Back')
             .onClick(() => {
@@ -108,7 +112,7 @@ struct AddWordPage {
       }
     })
     .hideTitleBar(true)
-    .backgroundColor('#fffff2ea')
+    .backgroundColor('#1A1A2E')
     .onBackPressed(() => {
         this.databaseManager.close()
         this.pathStack.pop()

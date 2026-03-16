@@ -52,7 +52,7 @@ struct QuizPage {
         Row() {
           Text(`Score: ${this.score}/${this.totalAnswered}`)
             .fontSize(14)
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
         }
         .width('100%')
         .justifyContent(FlexAlign.End)
@@ -61,10 +61,10 @@ struct QuizPage {
         if (this.currentWord) {
           Column() {
             Column() {
-                CustomText(this.currentWord.article, 14)
+                CustomText(this.currentWord.article, 14, Color.White)
             }
             Column() {
-                CustomText(this.currentWord.word, 24)
+                CustomText(this.currentWord.word, 24, Color.White)
             }
             .margin({ bottom: 20 })
 
@@ -84,7 +84,7 @@ struct QuizPage {
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .margin(10)
-          .fontColor(Color.Black)
+          .fontColor(Color.White)
 
         if (this.isAnswered) {
           Button('Next Question')
@@ -103,7 +103,7 @@ struct QuizPage {
       }
       .height('100%')
       .width('100%')
-      .backgroundColor('#fffff2ea')
+      .backgroundColor('#1A1A2E')
     }
     .onReady(async (context: NavDestinationContext) => {
       this.pathStack = context.pathStack;
@@ -118,5 +118,10 @@ struct QuizPage {
       }
     })
     .hideTitleBar(true)
+    .onBackPressed(() => {
+        this.databaseManager.close()
+        this.pathStack.pop()
+        return true
+    })
   }
 }

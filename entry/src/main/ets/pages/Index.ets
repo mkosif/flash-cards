@@ -38,7 +38,7 @@ struct Index {
         Column() {
 
           Text('Flash Cards')
-            .fontColor(Color.Black)
+            .fontColor(Color.White)
             .fontStyle(FontStyle.Italic)
             .fontSize(28)
             .padding(10)
@@ -46,13 +46,14 @@ struct Index {
           Column() {
             Text(this.selectedIndex === -1 ? 'Click to select word list' : this.wordLists[this.selectedIndex].name)
               .fontSize(18)
-              .fontColor(Color.Black)
+              .fontColor(Color.White)
               .fontWeight(FontWeight.Bold)
           }
           .bindMenu(this.MyMenu)
           .height(30)
           .padding({left: 10, right: 10})
-          .backgroundColor('#11ff30ff')
+          .backgroundColor('#2D2D44')
+          .borderRadius(15)
           .margin({ bottom: 20 })
           .justifyContent(FlexAlign.Center)
 
@@ -73,6 +74,7 @@ struct Index {
             })
             .width('70%')
             .margin({ bottom: 10 })
+            .backgroundColor('#FF6B35')
 
           Button('Quick Quiz')
             .onClick(async () => {
@@ -109,7 +111,7 @@ struct Index {
                 }
             })
             .width('70%')
-            .backgroundColor('#FF6B35')
+            .backgroundColor('#444466')
 
           Row() {
               Button('Stats')
@@ -117,12 +119,14 @@ struct Index {
                       this.pathStack.pushPathByName('StatisticsPage', null)
                   })
                   .margin(10)
+                  .backgroundColor('#00D4AA')
 
               Button('Settings')
                   .onClick(() => {
                       this.pathStack.pushPathByName('SettingsPage', null)
                   })
                   .margin(10)
+                  .backgroundColor('#444466')
           }
           .margin({top: 20})
         }
@@ -132,7 +136,7 @@ struct Index {
     }
     .hideTitleBar(true)
     .hideBackButton(true)
-    .backgroundColor('#fffff2ea')
+    .backgroundColor('#1A1A2E')
     .mode(NavigationMode.Stack)
   }
 }

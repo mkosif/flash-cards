@@ -1,5 +1,5 @@
 @Builder
-export function RemainingBox(count: number, txt: string, color: Color = Color.Black) {
+export function RemainingBox(count: number, txt: string, color: Color = Color.White) {
   Column() {
     Text(`${count}`)
       .fontSize(18)

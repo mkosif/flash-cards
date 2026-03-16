@@ -42,14 +42,14 @@ struct SettingsPage {
     NavDestination() {
       Column() {
         Column() {
-          CustomText('Settings', 24)
+          CustomText('Settings', 24, Color.White)
         }
         .margin({ bottom: 20 })
 
         Column() {
           Row() {
             Text('Haptic Feedback')
-              .fontColor(Color.Black)
+              .fontColor(Color.White)
               .fontSize(16)
             Blank()
             Toggle({ type: ToggleType.Switch, isOn: this.hapticEnabled })
@@ -59,14 +59,13 @@ struct SettingsPage {
           }
           .width('100%')
           .padding(10)
-          .backgroundColor(Color.White)
+          .backgroundColor('#2D2D44')
           .borderRadius(10)
           .margin({ bottom: 10 })
-          .border({width: 1, color: Color.Black})
 
           Row() {
             Text('Study Reminders')
-              .fontColor(Color.Black)
+              .fontColor(Color.White)
               .fontSize(16)
             Blank()
             Toggle({ type: ToggleType.Switch, isOn: this.remindersEnabled })
@@ -76,27 +75,25 @@ struct SettingsPage {
           }
           .width('100%')
           .padding(10)
-          .backgroundColor(Color.White)
+          .backgroundColor('#2D2D44')
           .borderRadius(10)
           .margin({ bottom: 10 })
-          .border({width: 1, color: Color.Black})
 
           Row() {
             Text('Daily Goal')
-              .fontColor(Color.Black)
+              .fontColor(Color.White)
               .fontSize(16)
             Blank()
             Counter() {
-                Text(this.dailyGoal.toString()).fontColor(Color.Black)
+                Text(this.dailyGoal.toString()).fontColor(Color.White)
             }
             .onInc(() => { this.dailyGoal++ })
             .onDec(() => { this.dailyGoal = Math.max(1, this.dailyGoal - 1) })
           }
           .width('100%')
           .padding(10)
-          .backgroundColor(Color.White)
+          .backgroundColor('#2D2D44')
           .borderRadius(10)
-          .border({width: 1, color: Color.Black})
         }
         .width('100%')
 
@@ -105,10 +102,11 @@ struct SettingsPage {
             this.pathStack.pop()
           })
           .margin({ top: 30 })
+          .backgroundColor('#2D2D44')
       }
       .height('100%')
       .width('100%')
-      .backgroundColor('#fffff2ea')
+      .backgroundColor('#1A1A2E')
       .justifyContent(FlexAlign.Center)
       .padding(20)
     }

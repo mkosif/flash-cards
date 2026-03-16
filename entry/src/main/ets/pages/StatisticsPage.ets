@@ -30,7 +30,7 @@ struct StatisticsPage {
       Scroll() {
         Column() {
           Column() {
-            CustomText('Learning Statistics', 24)
+            CustomText('Learning Statistics', 24, Color.White)
           }
           .margin({ top: 20, bottom: 20 })
 
@@ -43,7 +43,7 @@ struct StatisticsPage {
 
           if (this.achievements.length > 0) {
               Column() {
-                  CustomText('Achievements', 20)
+                  CustomText('Achievements', 20, Color.White)
                       .margin({top: 20, bottom: 10})
 
                   Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center }) {
@@ -51,11 +51,11 @@ struct StatisticsPage {
                           Text(achievement)
                               .padding(8)
                               .margin(5)
-                              .backgroundColor('#EEE')
+                              .backgroundColor('#2D2D44')
                               .borderRadius(15)
                               .fontSize(14)
-                              .fontColor(Color.Black)
-                              .border({width: 1, color: Color.Black})
+                              .fontColor(Color.White)
+                              .border({width: 1, color: '#444466'})
                       }, (achievement: string) => achievement)
                   }
               }
@@ -67,6 +67,7 @@ struct StatisticsPage {
               this.pathStack.pop()
             })
             .margin({ top: 30, bottom: 20 })
+            .backgroundColor('#2D2D44')
         }
         .width('100%')
       }
@@ -76,7 +77,7 @@ struct StatisticsPage {
       this.pathStack = context.pathStack
     })
     .hideTitleBar(true)
-    .backgroundColor('#fffff2ea')
+    .backgroundColor('#1A1A2E')
     .onBackPressed(() => {
         this.pathStack.pop()
         return true
@@ -87,7 +88,7 @@ struct StatisticsPage {
   StatRow(label: string, value: string, color: string) {
     Row() {
       Text(label)
-        .fontColor(Color.Black)
+        .fontColor(Color.White)
         .fontSize(16)
       Blank()
       Text(value)
@@ -98,8 +99,7 @@ struct StatisticsPage {
     .width('100%')
     .padding(10)
     .margin({ bottom: 10 })
-    .backgroundColor(Color.White)
+    .backgroundColor('#2D2D44')
     .borderRadius(10)
-    .border({width: 1, color: Color.Black})
   }
 }
