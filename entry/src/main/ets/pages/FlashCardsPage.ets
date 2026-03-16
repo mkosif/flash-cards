@@ -97,10 +97,11 @@ struct FlashCardsPage {
       .height('100%')
       .width('100%')
       .gesture(
-          PanGesture({ direction: PanDirection.Horizontal })
-              .onActionStart((event: GestureEvent) => {
-                  console.info('Horizontal swipe started, consuming event to prevent back navigation')
-              })
+          PanGesture({ direction: PanDirection.Left })
+              .onActionStart(() => {
+                  console.info('Consuming left swipe to prevent back navigation')
+              }),
+          GestureOrder.Parallel
       )
     }
     .onReady(async (context: NavDestinationContext) => {
@@ -149,6 +150,8 @@ struct FlashCardsPage {
     .hideTitleBar(true)
     .backgroundColor('#1A1A2E')
     .onBackPressed(() => {
+        this.databaseManager.close()
+        this.pathStack.pop()
         return true;
     })
   }

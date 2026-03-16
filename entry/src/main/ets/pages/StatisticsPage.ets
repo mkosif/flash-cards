@@ -43,8 +43,10 @@ struct StatisticsPage {
 
           if (this.achievements.length > 0) {
               Column() {
-                  CustomText('Achievements', 20, Color.White)
-                      .margin({top: 20, bottom: 10})
+                  Column() {
+                      CustomText('Achievements', 20, Color.White)
+                  }
+                  .margin({ top: 20, bottom: 10 })
 
                   Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Center }) {
                       ForEach(this.achievements, (achievement: string) => {
@@ -55,7 +57,7 @@ struct StatisticsPage {
                               .borderRadius(15)
                               .fontSize(14)
                               .fontColor(Color.White)
-                              .border({width: 1, color: '#444466'})
+                              .border({ width: 1, color: '#444466' })
                       }, (achievement: string) => achievement)
                   }
               }

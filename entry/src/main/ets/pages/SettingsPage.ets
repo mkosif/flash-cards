@@ -21,14 +21,14 @@ struct SettingsPage {
         const request: notificationManager.NotificationRequest = {
           id: 1,
           content: {
-            contentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT,
+            contentType: notificationManager.ContentType.NOTIFICATION_CONTENT_BASIC_TEXT as any,
             normal: {
               title: 'Time to study!',
               text: 'Dont forget to review your flash cards today.',
               additionalText: 'Keep your streak alive!'
             }
           },
-          deliveryTime: new Date().getTime() + 5000 // Test reminder in 5 seconds
+          deliveryTime: new Date().getTime() + 5000
         };
         await notificationManager.publish(request);
         console.info('Notification published');
