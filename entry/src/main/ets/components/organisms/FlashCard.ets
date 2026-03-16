@@ -227,7 +227,7 @@ export struct FlashCard {
     .rotate({ angle: this.cardRotation, centerY: 1000 })
     .rotate({ x: 0, y: 1, z: 0, angle: this.cardTilt, perspective: -800 })
     .onTouch((event: TouchEvent) => {
-      if (!event || !this.isActive || this.rotationCount === 0) {
+      if (!event || !this.isActive) {
         return;
       }
       const rotationThreshold: number = 5

@@ -24,7 +24,7 @@ struct FlashCardsPage {
 
   build() {
     NavDestination() {
-      Stack() {
+      Stack({ alignContent: Alignment.Top }) {
         Column() {
           Text(this.remainingCount.learnedCount + ` cards learned`)
             .fontColor(Color.White)
@@ -71,6 +71,7 @@ struct FlashCardsPage {
             }
             .height('70%')
             .width('70%')
+            .margin({ top: '15%' })
           } else {
             Column() {
               Column() {
@@ -99,12 +100,6 @@ struct FlashCardsPage {
       }
       .height('100%')
       .width('100%')
-      .parallelGesture(
-        PanGesture({ direction: PanDirection.Horizontal })
-          .onActionStart(() => {
-            console.info('Consuming horizontal swipe to prevent back navigation')
-          })
-      )
     }
     .onReady(async (context: NavDestinationContext) => {
       this.pathStack = context.pathStack
