@@ -131,6 +131,7 @@ struct Index {
           .margin({top: 20})
         }
         .width('100%')
+        .padding({ top: 40, bottom: 40 })
       }
       .scrollBar(BarState.Off)
     }
