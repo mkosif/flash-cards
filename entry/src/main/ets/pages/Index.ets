@@ -139,5 +139,11 @@ struct Index {
     .hideBackButton(true)
     .backgroundColor('#1A1A2E')
     .mode(NavigationMode.Stack)
+    .parallelGesture(
+      PanGesture({ direction: PanDirection.Left })
+        .onActionStart(() => {
+          console.info('Consuming left swipe to prevent back navigation')
+        })
+    )
   }
 }

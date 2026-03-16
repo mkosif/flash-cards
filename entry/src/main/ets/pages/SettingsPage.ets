@@ -44,10 +44,11 @@ struct SettingsPage {
 
   build() {
     NavDestination() {
-      Column() {
+      Scroll() {
         Column() {
-          CustomText('Settings', 24, Color.White)
-        }
+          Column() {
+            CustomText('Settings', 24, Color.White)
+          }
         .margin({ bottom: 20 })
 
         Column() {
@@ -101,18 +102,26 @@ struct SettingsPage {
         }
         .width('100%')
 
-        Button('Go Back')
-          .onClick(() => {
-            this.pathStack.pop()
-          })
-          .margin({ top: 30 })
-          .backgroundColor('#2D2D44')
+          Button('Go Back')
+            .onClick(() => {
+              this.pathStack.pop()
+            })
+            .margin({ top: 30 })
+            .backgroundColor('#2D2D44')
+        }
+        .width('100%')
+        .padding({ top: 40, bottom: 40, left: 20, right: 20 })
       }
+      .scrollBar(BarState.Off)
       .height('100%')
       .width('100%')
       .backgroundColor('#1A1A2E')
-      .justifyContent(FlexAlign.Center)
-      .padding(20)
+      .parallelGesture(
+        PanGesture({ direction: PanDirection.Left })
+          .onActionStart(() => {
+            console.info('Consuming left swipe to prevent back navigation')
+          })
+      )
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack

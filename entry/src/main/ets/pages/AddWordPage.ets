@@ -97,8 +97,15 @@ struct AddWordPage {
             .margin({ top: 10 })
         }
         .width('100%')
+        .padding({ top: 40, bottom: 40 })
       }
       .scrollBar(BarState.Off)
+      .parallelGesture(
+        PanGesture({ direction: PanDirection.Left })
+          .onActionStart(() => {
+            console.info('Consuming left swipe to prevent back navigation')
+          })
+      )
     }
     .onReady(async (context: NavDestinationContext) => {
       this.pathStack = context.pathStack;

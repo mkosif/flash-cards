@@ -89,21 +89,28 @@ struct QuizPage {
         if (this.isAnswered) {
           Button('Next Question')
             .onClick(() => this.loadQuestion())
-            .margin({ bottom: 20 })
+            .margin({ bottom: 30 })
         } else {
             Button('Go Back')
               .onClick(() => {
                   this.databaseManager.close()
                   this.pathStack.pop()
               })
-              .margin({ bottom: 20 })
+              .margin({ bottom: 30 })
               .backgroundColor(Color.Transparent)
               .fontColor(Color.Gray)
         }
       }
       .height('100%')
+      .padding({ top: 30 })
       .width('100%')
       .backgroundColor('#1A1A2E')
+      .parallelGesture(
+        PanGesture({ direction: PanDirection.Left })
+          .onActionStart(() => {
+            console.info('Consuming left swipe to prevent back navigation')
+          })
+      )
     }
     .onReady(async (context: NavDestinationContext) => {
       this.pathStack = context.pathStack;

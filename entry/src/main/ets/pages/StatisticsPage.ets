@@ -72,8 +72,15 @@ struct StatisticsPage {
             .backgroundColor('#2D2D44')
         }
         .width('100%')
+        .padding({ top: 40, bottom: 40 })
       }
       .scrollBar(BarState.Off)
+      .parallelGesture(
+        PanGesture({ direction: PanDirection.Left })
+          .onActionStart(() => {
+            console.info('Consuming left swipe to prevent back navigation')
+          })
+      )
     }
     .onReady((context: NavDestinationContext) => {
       this.pathStack = context.pathStack
