@@ -1,8 +1,8 @@
 import WordData from '../models/WordData';
 
-export class LeitnerService {
-  private static readonly INTERVALS = [1, 2, 4, 7, 14]; // Days for Box 1 to 5
+const LEITNER_INTERVALS = [1, 2, 4, 7, 14]; // Days for Box 1 to 5
 
+export class LeitnerService {
   static processReview(word: WordData, isCorrect: boolean): WordData {
     const now = new Date();
     word.lastReviewed = now.toISOString().split('T')[0];
@@ -30,7 +30,7 @@ export class LeitnerService {
       word.learned = false;
     }
 
-    const intervalDays = LeitnerService.INTERVALS[word.boxLevel - 1];
+    const intervalDays = LEITNER_INTERVALS[word.boxLevel - 1];
     const nextDate = new Date();
     nextDate.setDate(now.getDate() + intervalDays);
     word.nextReviewDate = nextDate.toISOString().split('T')[0];
@@ -39,8 +39,8 @@ export class LeitnerService {
   }
 
   static getBoxInterval(boxLevel: number): number {
-    if (boxLevel < 1) return LeitnerService.INTERVALS[0];
-    if (boxLevel > 5) return LeitnerService.INTERVALS[4];
-    return LeitnerService.INTERVALS[boxLevel - 1];
+    if (boxLevel < 1) return LEITNER_INTERVALS[0];
+    if (boxLevel > 5) return LEITNER_INTERVALS[4];
+    return LEITNER_INTERVALS[boxLevel - 1];
   }
 }
