@@ -1,6 +1,5 @@
 import { DatabaseManager, DatabaseManagerParam } from '../common/DatabaseManager';
 import WordData from '../models/WordData';
-import { CustomText } from '../components/atoms/CustomText';
 
 @Builder
 function quizPageBuilder() {
@@ -12,98 +11,123 @@ function quizPageBuilder() {
 struct QuizPage {
   pathStack: NavPathStack = new NavPathStack()
   @State databaseManager: DatabaseManager = new DatabaseManager();
-  @State currentWord: WordData | null = null;
   @State options: string[] = [];
   @State score: number = 0;
   @State totalAnswered: number = 0;
   @State feedback: string = '';
   @State isAnswered: boolean = false;
+  @State currentArticle: string = '';
+  @State currentWordText: string = '';
+  @State correctAnswer: string = '';
+  @State questionKey: number = 0;
+
+  learnedWords: WordData[] = [];
 
   async loadQuestion() {
     this.isAnswered = false;
     this.feedback = '';
-    const words = await this.databaseManager.getRandomUnlearnedWord(4);
-    if (words && words.length >= 4) {
-      this.currentWord = words[0];
-      let opts = words.map(w => w.meaning);
-      // Shuffle options
-      this.options = opts.sort(() => Math.random() - 0.5);
-    } else {
-      this.feedback = 'Not enough words for a quiz!';
+    this.options = [];
+    this.currentArticle = '';
+    this.currentWordText = '';
+    this.correctAnswer = '';
+
+    if (this.learnedWords.length === 0) {
+      const all = await this.databaseManager.getAllWords();
+      this.learnedWords = all.filter(w => w.learned);
     }
+
+    if (this.learnedWords.length < 3) {
+      this.feedback = 'Learn at least 3 words first!';
+      return;
+    }
+
+    const shuffled = [...this.learnedWords].sort(() => Math.random() - 0.5);
+    const picked = shuffled.slice(0, 3);
+    this.currentArticle = picked[0].article;
+    this.currentWordText = picked[0].word;
+    this.correctAnswer = picked[0].meaning;
+    this.options = picked.map(w => w.meaning).sort(() => Math.random() - 0.5);
+    this.questionKey++;
   }
 
   handleAnswer(selected: string) {
-    if (this.isAnswered || !this.currentWord) return;
+    if (this.isAnswered || !this.correctAnswer) return;
 
     this.isAnswered = true;
     this.totalAnswered++;
-    if (selected === this.currentWord.meaning) {
+    if (selected === this.correctAnswer) {
       this.score++;
       this.feedback = 'Correct! ✅';
     } else {
-      this.feedback = `Wrong! It was: ${this.currentWord.meaning} ❌`;
+      this.feedback = `Wrong! It was: ${this.correctAnswer} ❌`;
     }
   }
 
   build() {
     NavDestination() {
       Column() {
-        Row() {
-          Text(`Score: ${this.score}/${this.totalAnswered}`)
-            .fontSize(14)
-            .fontColor(Color.White)
-        }
-        .width('100%')
-        .justifyContent(FlexAlign.End)
-        .padding(10)
-
-        if (this.currentWord) {
-          Column() {
-            Column() {
-                CustomText(this.currentWord.article, 14, Color.White)
-            }
-            Column() {
-                CustomText(this.currentWord.word, 24, Color.White)
-            }
-            .margin({ bottom: 20 })
-
-            ForEach(this.options, (option: string) => {
-              Button(option)
-                .onClick(() => this.handleAnswer(option))
-                .width('80%')
-                .margin({ bottom: 5 })
-                .backgroundColor(this.isAnswered ? (option === this.currentWord?.meaning ? Color.Green : Color.Gray) : '#444466')
-            }, (option: string) => option)
-          }
-          .layoutWeight(1)
-          .justifyContent(FlexAlign.Center)
-        }
-
-        Text(this.feedback)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .margin(10)
+        Text(`Score: ${this.score}/${this.totalAnswered}`)
+          .fontSize(13)
           .fontColor(Color.White)
+          .textAlign(TextAlign.Center)
+          .margin({ bottom: 8 })
 
-        if (this.isAnswered) {
-          Button('Next Question')
-            .onClick(() => this.loadQuestion())
-            .margin({ bottom: 30 })
-        } else {
-            Button('Go Back')
-              .onClick(() => {
-                  this.databaseManager.close()
-                  this.pathStack.pop()
-              })
-              .margin({ bottom: 30 })
-              .backgroundColor(Color.Transparent)
-              .fontColor(Color.Gray)
+        if (this.currentWordText) {
+          Text(this.currentArticle)
+            .fontSize(13)
+            .fontColor(Color.White)
+            .key(`article_${this.questionKey}`)
+          Text(this.currentWordText)
+            .fontSize(20)
+            .fontColor(Color.White)
+            .key(`word_${this.questionKey}`)
+
+          if (!this.isAnswered) {
+            Column() {
+              ForEach(this.options, (option: string) => {
+                Button(option)
+                  .onClick(() => this.handleAnswer(option))
+                  .width('82%')
+                  .height(34)
+                  .fontSize(12)
+                  .margin({ bottom: 5 })
+                  .backgroundColor('#444466')
+              }, (option: string) => option)
+            }
+            .margin({ top: 10 })
+          } else {
+            Text(this.feedback)
+              .fontSize(14)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(this.feedback.startsWith('Correct') ? Color.Green : Color.Red)
+              .textAlign(TextAlign.Center)
+              .margin({ top: 12, bottom: 12 })
+              .width('80%')
+
+            Button('Next Question')
+              .onClick(() => this.loadQuestion())
+              .width('70%')
+              .height(34)
+              .fontSize(12)
+              .backgroundColor('#FF6B35')
+          }
         }
+
+        Button('Go Back')
+          .onClick(() => {
+            this.databaseManager.close()
+            this.pathStack.pop()
+          })
+          .margin({ top: 10 })
+          .backgroundColor(Color.Transparent)
+          .fontColor(Color.Gray)
+          .fontSize(12)
+          .height(30)
       }
       .height('100%')
-      .padding({ top: 30 })
       .width('100%')
+      .justifyContent(FlexAlign.Center)
+      .padding({ top: 30, bottom: 30, left: 15, right: 15 })
       .backgroundColor('#1A1A2E')
       .parallelGesture(
         PanGesture({ direction: PanDirection.Horizontal })

@@ -276,7 +276,7 @@ export class DatabaseManager {
       console.error(`Failed to update word. Code:${err.code}, message:${err.message}`);
     }
   }
-
+ 
   async updateWordProgress(id: number, boxLevel: number, nextReviewDate: string, reviewCount: number, correctCount: number, wrongCount: number, difficultyScore: number, lastReviewed: string, learned: boolean): Promise<void> {
     if (!this.rdbStore) {
       throw new Error('Database not initialized.');
@@ -311,63 +311,34 @@ export class DatabaseManager {
 
     const rdbStore = this.rdbStore;
     const tableName = this.tableName;
-    const today = new Date().toISOString().split('T')[0];
 
     try {
       const countPredicates = new relationalStore.RdbPredicates(tableName);
-      countPredicates.equalTo('learned', 0)
-        .and().beginWrap()
-        .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
-        .endWrap();
+      countPredicates.equalTo('learned', 0);
       if (excludedIds.length > 0) {
         countPredicates.notIn('id', excludedIds);
       }
 
-      let countResult = await rdbStore.query(countPredicates, ['COUNT(*)']);
+      const countResult = await rdbStore.query(countPredicates, ['COUNT(*)']);
       countResult.goToFirstRow();
-      let totalUnlearned = countResult.getLong(0);
+      const totalUnlearned = countResult.getLong(0);
       countResult.close();
 
-      const useFallback = totalUnlearned === 0;
-
-      if (useFallback) {
-        // Fallback: If no cards are available for today, show any unlearned cards
-        const fallbackPredicates = new relationalStore.RdbPredicates(tableName);
-        fallbackPredicates.equalTo('learned', 0);
-        if (excludedIds.length > 0) {
-          fallbackPredicates.notIn('id', excludedIds);
-        }
-        countResult = await rdbStore.query(fallbackPredicates, ['COUNT(*)']);
-        countResult.goToFirstRow();
-        totalUnlearned = countResult.getLong(0);
-        countResult.close();
-
-        if (totalUnlearned === 0) {
-          return null;
-        }
+      if (totalUnlearned === 0) {
+        return null;
       }
 
       const N = Math.min(requiredCount, totalUnlearned);
-      if (N === 0) {
-        return [];
-      }
       const offsets = new Set<number>();
       while (offsets.size < N) {
         const r = await doRand();
         offsets.add(Math.floor(r * totalUnlearned));
       }
 
-      const offsetArray = Array.from(offsets);
       const results: WordData[] = [];
-
-      for (const offset of offsetArray) {
+      for (const offset of Array.from(offsets)) {
         const wordPred = new relationalStore.RdbPredicates(tableName);
         wordPred.equalTo('learned', 0);
-        if (!useFallback) {
-          wordPred.and().beginWrap()
-            .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
-            .endWrap();
-        }
         if (excludedIds.length > 0) {
           wordPred.notIn('id', excludedIds);
         }
@@ -398,7 +369,6 @@ export class DatabaseManager {
             rs.getString(rs.getColumnIndex('category'))
           ));
         }
-
         rs.close();
       }
       return results;
@@ -452,70 +422,27 @@ export class DatabaseManager {
     if (!this.rdbStore) {
       throw new Error('Database not initialized.');
     }
-    const rdbStore = this.rdbStore;
-    const tableName = this.tableName;
-    const today = new Date().toISOString().split('T')[0];
 
-    return new Promise<Remaining>((resolve, reject) => {
-      let learnedCount: number = 0;
-      let unlearnedCount: number = 0;
-      let queriesCompleted: number = 0;
-      const totalQueries: number = 2;
-      const finishCheck = () => {
-        queriesCompleted++;
-        if (queriesCompleted === totalQueries) {
-          resolve({ learnedCount, unlearnedCount });
-        }
-      };
+    try {
+      const learnedPred = new relationalStore.RdbPredicates(this.tableName);
+      learnedPred.equalTo('learned', 1);
+      const learnedResult = await this.rdbStore.query(learnedPred, ['COUNT(*)']);
+      learnedResult.goToFirstRow();
+      const learnedCount = learnedResult.getLong(0);
+      learnedResult.close();
 
-      try {
-        const learnedPredicates = new relationalStore.RdbPredicates(tableName);
-        // "Session Learned": card has graduated (learned=1) OR been reviewed today
-        learnedPredicates.equalTo('learned', 1).or().equalTo('last_reviewed', today);
-        rdbStore.query(
-          learnedPredicates,
-          ['COUNT(*)'],
-          (err: BusinessError | undefined, resultSet: relationalStore.ResultSet) => {
-            if (err) {
-              console.error(`Query (Learned Count) failed. Code:${err.code}, message:${err.message}`);
-              reject(err);
-              return;
-            }
-            if (resultSet.goToFirstRow()) {
-              learnedCount = resultSet.getLong(0);
-            }
-            resultSet.close();
-            finishCheck();
-          }
-        );
+      const unlearnedPred = new relationalStore.RdbPredicates(this.tableName);
+      unlearnedPred.equalTo('learned', 0);
+      const unlearnedResult = await this.rdbStore.query(unlearnedPred, ['COUNT(*)']);
+      unlearnedResult.goToFirstRow();
+      const unlearnedCount = unlearnedResult.getLong(0);
+      unlearnedResult.close();
 
-        const unlearnedPredicates = new relationalStore.RdbPredicates(tableName);
-        // "Session Unlearned": card is NOT learned AND not reviewed today
-        unlearnedPredicates.equalTo('learned', 0)
-          .and().beginWrap()
-          .isNull('last_reviewed').or().equalTo('last_reviewed', '').or().notEqualTo('last_reviewed', today)
-          .endWrap();
-        rdbStore.query(
-          unlearnedPredicates,
-          ['COUNT(*)'],
-          (err: BusinessError | undefined, resultSet: relationalStore.ResultSet) => {
-            if (err) {
-              console.error(`Query (Unlearned Count) failed. Code:${err.code}, message:${err.message}`);
-              reject(err);
-              return;
-            }
-            if (resultSet.goToFirstRow()) {
-              unlearnedCount = resultSet.getLong(0);
-            }
-            resultSet.close();
-            finishCheck();
-          }
-        );
-      } catch (e) {
-        const error = e as BusinessError;
-        reject(error);
-      }
-    });
+      return { learnedCount, unlearnedCount };
+    } catch (e) {
+      console.error(`getWordCounts failed: ${JSON.stringify(e)}`);
+      return { learnedCount: 0, unlearnedCount: 0 };
+    }
   }
 
   async setAllUnlearned(): Promise<void> {
@@ -528,7 +455,9 @@ export class DatabaseManager {
       review_count: 0,
       correct_count: 0,
       wrong_count: 0,
-      difficulty_score: 50.0
+      difficulty_score: 50.0,
+      last_reviewed: '',
+      next_review_date: ''
     };
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(this.tableName);
     try {

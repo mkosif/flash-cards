@@ -25,26 +25,34 @@ export struct Cards {
 
   async setCardAsLearnedAndGetNewData(index: number, isCorrect: boolean) {
     let word = this.wordDataList[index];
-    LeitnerService.processReview(word, isCorrect);
-    await this.databaseManager.updateWordProgress(
-      word.id,
-      word.boxLevel,
-      word.nextReviewDate,
-      word.reviewCount,
-      word.correctCount,
-      word.wrongCount,
-      word.difficultyScore,
-      word.lastReviewed,
-      word.learned
-    );
 
-    // Update AppStorage Stats
-    let totalLearned = AppStorage.get<number>('totalLearned') || 0;
-    // Word is learned ONLY if it graduates to fully learned state
-    if (word.learned) {
+    // Track Leitner stats in background
+    LeitnerService.processReview(word, isCorrect);
+
+    if (isCorrect) {
+      // Right swipe = card is learned, remove from pool
+      word.learned = true;
+      await this.databaseManager.updateWordProgress(
+        word.id, word.boxLevel, word.nextReviewDate, word.reviewCount,
+        word.correctCount, word.wrongCount, word.difficultyScore,
+        word.lastReviewed, word.learned
+      );
+      this.remainingCount = await this.databaseManager.getWordCounts();
+
+      // Update AppStorage Stats
+      let totalLearned = AppStorage.get<number>('totalLearned') || 0;
       AppStorage.setOrCreate('totalLearned', totalLearned + 1);
+    } else {
+      // Left swipe = card stays in pool, just update Leitner stats
+      word.learned = false;
+      await this.databaseManager.updateWordProgress(
+        word.id, word.boxLevel, word.nextReviewDate, word.reviewCount,
+        word.correctCount, word.wrongCount, word.difficultyScore,
+        word.lastReviewed, word.learned
+      );
     }
 
+    // Update correct/wrong counters
     let correctTotal = AppStorage.get<number>('correctTotal') || 0;
     let wrongTotal = AppStorage.get<number>('wrongTotal') || 0;
     if (isCorrect) {
@@ -59,17 +67,12 @@ export struct Cards {
     const today = new Date().toISOString().split('T')[0];
     const lastDate = AppStorage.get<string>('lastStudyDate');
     let streak = AppStorage.get<number>('streak') || 0;
-
     if (lastDate !== today) {
       if (lastDate) {
         const last = new Date(lastDate);
         const curr = new Date(today);
         const diffDays = Math.floor((curr.getTime() - last.getTime()) / (1000 * 3600 * 24));
-        if (diffDays === 1) {
-          streak++;
-        } else if (diffDays > 1) {
-          streak = 1;
-        }
+        streak = diffDays === 1 ? streak + 1 : 1;
       } else {
         streak = 1;
       }
@@ -77,31 +80,25 @@ export struct Cards {
       AppStorage.setOrCreate('lastStudyDate', today);
     }
 
-    this.remainingCount = await this.databaseManager.getWordCounts()
-    const processItemAsync = async (): Promise<void> => {
-
-      let list: WordData[] | null =
-        await this.databaseManager.getRandomUnlearnedWord(1, [this.data0.id, this.data1.id, this.data2.id])
-      if (list === null || list[0] === undefined) {
-        console.info(`No new card!`)
-        if (isCorrect) {
-          this.visibilities[index] = false;
-        }
-        return;
+    // Try to load a replacement card
+    let list: WordData[] | null =
+      await this.databaseManager.getRandomUnlearnedWord(1, [this.data0.id, this.data1.id, this.data2.id])
+    if (list === null || list[0] === undefined) {
+      console.info(`No new card!`)
+      if (isCorrect) {
+        this.visibilities[index] = false;
       }
-      console.info(`New card: ${list[0].toString()}`)
-      this.wordDataList[index] = list[0]
-      if (index === 0) {
-        this.data0 = this.wordDataList[0]
-      } else if (index === 1) {
-        this.data1 = this.wordDataList[1]
-      } else {
-        this.data2 = this.wordDataList[2]
-      }
-    };
-    await processItemAsync();
-
-    console.info(`Remaining count: ${this.remainingCount.unlearnedCount}`)
+      return;
+    }
+    console.info(`New card: ${list[0].toString()}`)
+    this.wordDataList[index] = list[0]
+    if (index === 0) {
+      this.data0 = this.wordDataList[0]
+    } else if (index === 1) {
+      this.data1 = this.wordDataList[1]
+    } else {
+      this.data2 = this.wordDataList[2]
+    }
   }
 
   onSwiped0() {

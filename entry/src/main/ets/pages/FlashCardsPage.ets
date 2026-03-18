@@ -85,7 +85,8 @@ struct FlashCardsPage {
                 .margin(5)
             }
             .height('55%')
-            .width('55%')
+            .width('70%')
+            .margin({ top: '22%' })
             .justifyContent(FlexAlign.Center)
 
           }
@@ -110,10 +111,7 @@ struct FlashCardsPage {
         const idx = ids[ids.length - 1];
         this.databaseManager = (this.pathStack.getParamByIndex(idx) as DatabaseManagerParam).databaseManager;
 
-        let list: WordData[] | null = await this.databaseManager.getDueWords()
-        if (list === null || list.length === 0) {
-          list = await this.databaseManager.getRandomUnlearnedWord(3)
-        }
+        let list: WordData[] | null = await this.databaseManager.getRandomUnlearnedWord(3)
 
         if (list !== null && list.length > 0) {
           this.wordDataList[0] = list[0]
