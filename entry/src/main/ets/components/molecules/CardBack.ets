@@ -1,7 +1,14 @@
 import { CustomText } from '../atoms/CustomText'
 import { Word } from './Word'
 
-@Builder export function CardBack(article: string, word: string, exampleSentence: string, translation: string, imageSrc?: string) {
+@Builder
+export function CardBack(
+  article: string,
+  word: string,
+  exampleSentence: string,
+  translation: string,
+  imageSrc?: string
+) {
   Column(){
     if (imageSrc) {
       Image(imageSrc)

@@ -20,9 +20,15 @@ struct StatisticsPage {
     this.accuracy = AppStorage.get<number>('accuracy') || 0;
 
     this.achievements = [];
-    if (this.totalLearned >= 10) this.achievements.push('🎓 Beginner');
-    if (this.totalLearned >= 50) this.achievements.push('📜 Scholar');
-    if (this.streak >= 7) this.achievements.push('🔥 Weekly Warrior');
+    if (this.totalLearned >= 10) {
+      this.achievements.push('🎓 Beginner');
+    }
+    if (this.totalLearned >= 50) {
+      this.achievements.push('📜 Scholar');
+    }
+    if (this.streak >= 7) {
+      this.achievements.push('🔥 Weekly Warrior');
+    }
   }
 
   build() {

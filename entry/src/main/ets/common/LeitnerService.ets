@@ -39,8 +39,12 @@ export class LeitnerService {
   }
 
   static getBoxInterval(boxLevel: number): number {
-    if (boxLevel < 1) return LEITNER_INTERVALS[0];
-    if (boxLevel > 5) return LEITNER_INTERVALS[4];
+    if (boxLevel < 1) {
+      return LEITNER_INTERVALS[0];
+    }
+    if (boxLevel > 5) {
+      return LEITNER_INTERVALS[4];
+    }
     return LEITNER_INTERVALS[boxLevel - 1];
   }
 }

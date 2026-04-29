@@ -50,7 +50,9 @@ struct QuizPage {
   }
 
   handleAnswer(selected: string) {
-    if (this.isAnswered || !this.correctAnswer) return;
+    if (this.isAnswered || !this.correctAnswer) {
+      return;
+    }
 
     this.isAnswered = true;
     this.totalAnswered++;

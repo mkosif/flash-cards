@@ -50,6 +50,10 @@ export default class WordData {
   }
 
   public toString() {
-    return `{ id: ${this.id}, ${this.article} ${this.word}, meaning: ${this.meaning}, example: ${this.example}, learned: ${this.learned}, boxLevel: ${this.boxLevel}, nextReview: ${this.nextReviewDate} }`
+    return [
+      `{ id: ${this.id}, ${this.article} ${this.word}, meaning: ${this.meaning}, `,
+      `example: ${this.example}, learned: ${this.learned}, boxLevel: ${this.boxLevel}, `,
+      `nextReview: ${this.nextReviewDate} }`
+    ].join('')
   }
 }

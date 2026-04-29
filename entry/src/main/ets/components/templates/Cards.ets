@@ -119,9 +119,15 @@ export struct Cards {
 
   onDataUpdate() {
     console.info(`Cards onDataUpdate. wordDataList length: ${this.wordDataList.length}`)
-    if (this.wordDataList.length > 0) this.data0 = this.wordDataList[0]
-    if (this.wordDataList.length > 1) this.data1 = this.wordDataList[1]
-    if (this.wordDataList.length > 2) this.data2 = this.wordDataList[2]
+    if (this.wordDataList.length > 0) {
+      this.data0 = this.wordDataList[0]
+    }
+    if (this.wordDataList.length > 1) {
+      this.data1 = this.wordDataList[1]
+    }
+    if (this.wordDataList.length > 2) {
+      this.data2 = this.wordDataList[2]
+    }
     this.activateCards()
   }
 
