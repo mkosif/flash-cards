@@ -35,7 +35,7 @@ export struct FlashCard {
     try {
       vibrator.startVibration({
         type: 'time',
-        duration: duration,
+        duration: duration
       }, {
         id: 0,
         usage: 'touch'
