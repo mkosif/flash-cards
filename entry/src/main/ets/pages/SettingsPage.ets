@@ -33,11 +33,11 @@ struct SettingsPage {
         };
         notificationManager.publish(request, (err: BusinessError) => {
           if (err) {
-            console.error('Notification publish failed: ' + JSON.stringify(err));
+            console.error(`Notification publish failed: ${JSON.stringify(err)}`);
           }
         });
       } catch (e) {
-        console.error('Notification failed: ' + JSON.stringify(e));
+        console.error(`Notification failed: ${JSON.stringify(e)}`);
       }
     }
   }

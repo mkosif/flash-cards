@@ -15,7 +15,7 @@
 * Learning and reviewing vocabulary on a daily basis
 * Selecting and switching between different word lists
 
-# Technology Stack
+# Tech Stack
 **Languages**: ArkTS, ArkUI  
 **Frameworks**: HarmonyOS SDK 6.0.0  
 **Tools**: DevEco Studio 6.0.0  

@@ -25,12 +25,9 @@ export struct Cards {
 
   async setCardAsLearnedAndGetNewData(index: number, isCorrect: boolean) {
     let word = this.wordDataList[index];
-
-    // Track Leitner stats in background
     LeitnerService.processReview(word, isCorrect);
 
     if (isCorrect) {
-      // Right swipe = card is learned, remove from pool
       word.learned = true;
       await this.databaseManager.updateWordProgress(
         word.id, word.boxLevel, word.nextReviewDate, word.reviewCount,
@@ -39,11 +36,9 @@ export struct Cards {
       );
       this.remainingCount = await this.databaseManager.getWordCounts();
 
-      // Update AppStorage Stats
       let totalLearned = AppStorage.get<number>('totalLearned') || 0;
       AppStorage.setOrCreate('totalLearned', totalLearned + 1);
     } else {
-      // Left swipe = card stays in pool, just update Leitner stats
       word.learned = false;
       await this.databaseManager.updateWordProgress(
         word.id, word.boxLevel, word.nextReviewDate, word.reviewCount,
@@ -52,7 +47,6 @@ export struct Cards {
       );
     }
 
-    // Update correct/wrong counters
     let correctTotal = AppStorage.get<number>('correctTotal') || 0;
     let wrongTotal = AppStorage.get<number>('wrongTotal') || 0;
     if (isCorrect) {
@@ -63,7 +57,6 @@ export struct Cards {
     let accuracy = Math.floor(((correctTotal + (isCorrect ? 1 : 0)) / (correctTotal + wrongTotal + 1)) * 100);
     AppStorage.setOrCreate('accuracy', accuracy);
 
-    // Update Streak
     const today = new Date().toISOString().split('T')[0];
     const lastDate = AppStorage.get<string>('lastStudyDate');
     let streak = AppStorage.get<number>('streak') || 0;
@@ -80,7 +73,6 @@ export struct Cards {
       AppStorage.setOrCreate('lastStudyDate', today);
     }
 
-    // Try to load a replacement card
     let list: WordData[] | null =
       await this.databaseManager.getRandomUnlearnedWord(1, [this.data0.id, this.data1.id, this.data2.id])
     if (list === null || list[0] === undefined) {

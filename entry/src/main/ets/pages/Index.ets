@@ -1,4 +1,4 @@
-import { DatabaseManager, DatabaseManagerParam, Remaining } from '../common/DatabaseManager';
+import { DatabaseManager, DatabaseManagerParam } from '../common/DatabaseManager';
 import WordList from '../models/WordList';
 
 @Entry
@@ -17,7 +17,6 @@ struct Index {
     new WordList('My Custom List', 'MyCustomList')
   ]
   @State selectedIndex: number = -1;
-  @State remaining: Remaining = { learnedCount: 0, unlearnedCount: 0 };
 
   @Builder
   MyMenu() {
@@ -98,7 +97,7 @@ struct Index {
           Button('Add New Word')
             .onClick(async () => {
                 if (this.selectedIndex === -1) {
-                  this.selectedIndex = this.wordLists.length - 1; // Default to Custom List
+                  this.selectedIndex = this.wordLists.length - 1;
                 }
                 let databaseManager: DatabaseManager = new DatabaseManager()
                 try {
