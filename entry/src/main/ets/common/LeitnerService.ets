@@ -1,6 +1,6 @@
 import WordData from '../models/WordData';
 
-const LEITNER_INTERVALS = [1, 2, 4, 7, 14]; // Days for Box 1 to 5
+const LEITNER_INTERVALS = [1, 2, 4, 7, 14];
 
 export class LeitnerService {
   static processReview(word: WordData, isCorrect: boolean): WordData {
@@ -10,22 +10,17 @@ export class LeitnerService {
 
     if (isCorrect) {
       word.correctCount++;
-      // Move to next box, max 5
       if (word.boxLevel < 5) {
         word.boxLevel++;
       }
-      // Difficulty decrease on success
       word.difficultyScore = Math.max(0, word.difficultyScore - 5);
 
-      // If box 5 and correct, mark as learned
       if (word.boxLevel === 5) {
           word.learned = true;
       }
     } else {
       word.wrongCount++;
-      // Reset to Box 1 on failure
       word.boxLevel = 1;
-      // Difficulty increase on failure
       word.difficultyScore = Math.min(100, word.difficultyScore + 10);
       word.learned = false;
     }

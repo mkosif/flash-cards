@@ -9,7 +9,7 @@ export struct FlashCard {
   @Link public wordData: WordData;
   @Link public isActive: boolean;
   @Link swiped: boolean;
-  @Link swipeDirection: boolean; // right = true, left = false
+  @Link swipeDirection: boolean;
   @State private front: boolean = true
   public rotationCount: number = 0
   @State private rotation: number = 0
@@ -65,13 +65,13 @@ export struct FlashCard {
   }
 
   swipeRight() {
-    this.triggerHaptic(50); // Got it feedback
+    this.triggerHaptic(50);
     setTimeout(() => {
         this.triggerHaptic(50);
     }, 100);
     this.swipeAndDo(180, () => {
       this.cardRotation = 0
-      this.swipeDirection = true // Green action
+      this.swipeDirection = true
       this.swiped = true
       this.opacityRight = 0
       this.front = true
@@ -80,10 +80,10 @@ export struct FlashCard {
   }
 
   swipeLeft() {
-    this.triggerHaptic(200); // Study again feedback
+    this.triggerHaptic(200);
     this.swipeAndDo(-180, () => {
       this.cardRotation = 0
-      this.swipeDirection = false // Red action
+      this.swipeDirection = false
       this.swiped = true
       this.opacityRight = 0
       this.front = true

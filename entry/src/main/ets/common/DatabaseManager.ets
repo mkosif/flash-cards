@@ -110,7 +110,6 @@ export class DatabaseManager {
               }
             } else {
               console.info(`Table ${tableName} already exists. Checking for schema updates.`);
-              // Minimal migration for version 2: adding columns if they don't exist
               if (store.version < 2) {
                 try {
                    await store.execute(`ALTER TABLE ${tableName} ADD COLUMN box_level INTEGER DEFAULT 1`);
@@ -263,7 +262,7 @@ export class DatabaseManager {
     }
 
     const values: relationalStore.ValuesBucket = {
-      learned: 1 // 1 for true
+      learned: 1
     };
 
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(this.tableName);
