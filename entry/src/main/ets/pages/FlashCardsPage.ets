@@ -1,8 +1,6 @@
 import { DatabaseManager, DatabaseManagerParam, Remaining } from '../common/DatabaseManager';
 import { Cards } from '../components/templates/Cards';
 import WordData from '../models/WordData';
-import { ArcButton, ArcButtonOptions, ArcButtonPosition, ArcButtonStyleMode } from '@ohos.arkui.advanced.ArcButton';
-import { LengthMetrics, LengthMetricsUnit, LengthUnit } from '@kit.ArkUI';
 import { CustomText } from '../components/atoms/CustomText';
 
 @Builder
@@ -15,8 +13,11 @@ function flashCardsPageBuilder() {
 struct FlashCardsPage {
   pathStack: NavPathStack = new NavPathStack()
   @State wordDataList: WordData[] =
-    [new WordData(0, 'das', '', '', '', false), new WordData(0, 'das', '', '', '', false),
-      new WordData(0, 'das', '', '', '', false),]
+    [
+      new WordData(0, 'das', '', '', '', false),
+      new WordData(0, 'das', '', '', '', false),
+      new WordData(0, 'das', '', '', '', false)
+    ]
   @State databaseManager: DatabaseManager = new DatabaseManager;
   @State dataLoaded: boolean = false;
   @State initalVisibilities: boolean[] = [true, true, true];
@@ -26,10 +27,10 @@ struct FlashCardsPage {
     NavDestination() {
       Stack({ alignContent: Alignment.Top }) {
         Column() {
-          Text(this.remainingCount.learnedCount + ` cards learned`)
+          Text(`${this.remainingCount.learnedCount} cards learned`)
             .fontColor(Color.White)
             .fontSize(12)
-          Text(this.remainingCount.unlearnedCount + ` cards left`)
+          Text(`${this.remainingCount.unlearnedCount} cards left`)
             .fontColor(Color.White)
             .fontSize(12)
         }
@@ -39,20 +40,15 @@ struct FlashCardsPage {
         .justifyContent(FlexAlign.End)
 
         Column() {
-          ArcButton({
-            options: new ArcButtonOptions({
-              fontSize: { value: 12, unit: LengthUnit.PX },
-              label: 'Go back',
-              position: ArcButtonPosition.TOP_EDGE,
-              styleMode: ArcButtonStyleMode.EMPHASIZED_DARK,
-              onClick: (): void => {
-                console.info('Go back button pressed')
-                this.databaseManager.close()
-                this.pathStack.pop()
-              }
+          Button('Go back')
+            .fontSize(12)
+            .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+            .backgroundColor('#444466')
+            .onClick(() => {
+              console.info('Go back button pressed')
+              this.databaseManager.close()
+              this.pathStack.pop()
             })
-          })
-            .padding(0)
         }
 
         if (this.dataLoaded) {

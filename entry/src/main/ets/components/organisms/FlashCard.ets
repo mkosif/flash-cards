@@ -3,8 +3,6 @@ import { RectangularText } from '../atoms/RectangularText';
 import { CardBack } from '../molecules/CardBack';
 import { CardFront } from '../molecules/CardFront'
 import { vibrator } from '@kit.SensorServiceKit';
-import { textToSpeech } from '@kit.CoreSpeechKit';
-import { BusinessError } from '@kit.BasicServicesKit';
 
 @Component
 export struct FlashCard {
@@ -25,44 +23,9 @@ export struct FlashCard {
   @State opacityRight: number = 0;
 
   @StorageProp('hapticEnabled') hapticEnabled: boolean = true;
-  private ttsEngine: textToSpeech.TextToSpeechEngine | null = null;
 
   aboutToAppear() {
     this.uiCtx = this.getUIContext();
-    this.initTTS();
-  }
-
-  private initTTS() {
-    let initParams: textToSpeech.CreateEngineParams = {
-      language: 'de-DE',
-      person: 0,
-      online: 1,
-      extraParams: { style: 'interaction-broadcast', locate: 'DE' }
-    };
-    try {
-      textToSpeech.createEngine(initParams, (err: BusinessError, engine: textToSpeech.TextToSpeechEngine) => {
-        if (!err) {
-          this.ttsEngine = engine;
-        } else {
-          console.error(`TTS Engine creation failed: ${JSON.stringify(err)}`);
-        }
-      });
-    } catch (e) {
-      console.error(`TTS Init Error: ${JSON.stringify(e)}`);
-    }
-  }
-
-  private speak(text: string) {
-    if (this.ttsEngine) {
-      let speakParams: textToSpeech.SpeakParams = {
-        requestId: Date.now().toString()
-      };
-      try {
-        this.ttsEngine.speak(text, speakParams);
-      } catch (e) {
-        console.error(`TTS Speak Error: ${JSON.stringify(e)}`);
-      }
-    }
   }
 
   private triggerHaptic(duration: number) {
@@ -143,17 +106,12 @@ export struct FlashCard {
     this.uiCtx.animateTo({
       duration: 250,
       curve: Curve.EaseIn,
-      onFinish: () => {
-        this.front = !this.front;
-        this.rotationCount++;
-
-        if (!this.front) {
-          this.speak(this.wordData.word);
-        }
-
-        this.uiCtx?.animateTo(
-          {
-            duration: 250,
+        onFinish: () => {
+          this.front = !this.front;
+          this.rotationCount++;
+          this.uiCtx?.animateTo(
+            {
+              duration: 250,
             curve: Curve.EaseOut
           },
           () => {
@@ -178,7 +136,13 @@ export struct FlashCard {
         .height('100%')
 
         Column() {
-          CardBack(this.wordData.article, this.wordData.word, this.wordData.example, this.wordData.meaning, this.wordData.imageSrc)
+          CardBack(
+            this.wordData.article,
+            this.wordData.word,
+            this.wordData.example,
+            this.wordData.meaning,
+            this.wordData.imageSrc
+          )
         }
         .visibility(!this.front ? Visibility.Visible : Visibility.Hidden)
         .width('100%')

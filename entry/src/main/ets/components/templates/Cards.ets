@@ -139,8 +139,8 @@ export struct Cards {
 
   build() {
     Stack() {
-      ForEach(this.order, (index: number) => {
-        if (index === 0) {
+      ForEach(this.order, (slotId: number) => {
+        if (slotId === 0) {
           FlashCard({
             wordData: $data0,
             isActive: $isActivate0,
@@ -150,7 +150,7 @@ export struct Cards {
             .width('100%')
             .height('100%')
             .visibility(this.visibilities[0] ? Visibility.Visible : Visibility.Hidden)
-        } else if (index === 1) {
+        } else if (slotId === 1) {
           FlashCard({
             wordData: $data1,
             isActive: $isActivate1,
@@ -172,7 +172,7 @@ export struct Cards {
             .visibility(this.visibilities[2] ? Visibility.Visible : Visibility.Hidden)
         }
       },
-        (index: number) => `${index}_${this.wordDataList[index]?.id ?? index}`)
+        (slotId: number) => slotId.toString())
 
     }
     .width('100%')

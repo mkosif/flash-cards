@@ -1,5 +1,6 @@
 import { DatabaseManager, DatabaseManagerParam } from '../common/DatabaseManager';
 import WordData from '../models/WordData';
+import { secureRandomNumber } from '../utils/SecureRandom';
 
 @Builder
 function quizPageBuilder() {
@@ -10,7 +11,7 @@ function quizPageBuilder() {
 @Component
 struct QuizPage {
   pathStack: NavPathStack = new NavPathStack()
-  @State databaseManager: DatabaseManager = new DatabaseManager();
+  private databaseManager: DatabaseManager = new DatabaseManager();
   @State options: string[] = [];
   @State score: number = 0;
   @State totalAnswered: number = 0;
@@ -19,7 +20,6 @@ struct QuizPage {
   @State currentArticle: string = '';
   @State currentWordText: string = '';
   @State correctAnswer: string = '';
-  @State questionKey: number = 0;
 
   learnedWords: WordData[] = [];
 
@@ -41,13 +41,12 @@ struct QuizPage {
       return;
     }
 
-    const shuffled = [...this.learnedWords].sort(() => Math.random() - 0.5);
+    const shuffled = [...this.learnedWords].sort(() => secureRandomNumber() - 0.5);
     const picked = shuffled.slice(0, 3);
     this.currentArticle = picked[0].article;
     this.currentWordText = picked[0].word;
     this.correctAnswer = picked[0].meaning;
-    this.options = picked.map(w => w.meaning).sort(() => Math.random() - 0.5);
-    this.questionKey++;
+    this.options = picked.map(w => w.meaning).sort(() => secureRandomNumber() - 0.5);
   }
 
   handleAnswer(selected: string) {
@@ -76,11 +75,9 @@ struct QuizPage {
           Text(this.currentArticle)
             .fontSize(13)
             .fontColor(Color.White)
-            .key(`article_${this.questionKey}`)
           Text(this.currentWordText)
             .fontSize(20)
             .fontColor(Color.White)
-            .key(`word_${this.questionKey}`)
 
           if (!this.isAnswered) {
             Column() {

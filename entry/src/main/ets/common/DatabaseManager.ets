@@ -2,7 +2,7 @@ import { relationalStore } from '@kit.ArkData';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { JSON, util } from '@kit.ArkTS';
 import WordData from '../models/WordData';
-import { cryptoFramework } from '@kit.CryptoArchitectureKit';
+import { secureRandomNumber } from '../utils/SecureRandom';
 
 const DB_NAME: string = 'WordLists.db';
 const DB_VERSION: number = 2;
@@ -55,8 +55,8 @@ export interface DatabaseManagerParam {
   databaseManager: DatabaseManager
 }
 
-async function doRand(): Promise<number> {
-  return Math.random();
+function doRand(): number {
+  return secureRandomNumber();
 }
 
 export class DatabaseManager {
@@ -91,8 +91,10 @@ export class DatabaseManager {
           let storeVersion: number = store.version;
 
           try {
-            const queryResult =
-              await store.querySql(`SELECT name FROM sqlite_master WHERE type='table' AND name=?;`, [tableName]);
+            const queryResult = await store.querySql(
+              `SELECT name FROM sqlite_master WHERE type='table' AND name=?;`,
+              [tableName]
+            );
             const tableExists = queryResult.rowCount > 0;
             queryResult.close();
 
@@ -199,7 +201,6 @@ export class DatabaseManager {
     }
   }
 
-
   async getAllWords(): Promise<Array<WordData>> {
     if (!this.rdbStore) {
       throw new Error('Database not initialized.');
@@ -211,7 +212,11 @@ export class DatabaseManager {
       try {
         this.rdbStore!.query(
           predicates,
-          ['id', 'article', 'word', 'meaning', 'example', 'learned', 'box_level', 'next_review_date', 'review_count', 'correct_count', 'wrong_count', 'difficulty_score', 'last_reviewed', 'category'],
+          [
+            'id', 'article', 'word', 'meaning', 'example', 'learned', 'box_level',
+            'next_review_date', 'review_count', 'correct_count', 'wrong_count',
+            'difficulty_score', 'last_reviewed', 'category'
+          ],
           (err: BusinessError | undefined, resultSet: relationalStore.ResultSet) => {
             if (err) {
               console.error(`Query failed. Code:${err.code}, message:${err.message}`);
@@ -258,7 +263,7 @@ export class DatabaseManager {
     }
 
     const values: relationalStore.ValuesBucket = {
-      learned: 1, // 1 for true
+      learned: 1 // 1 for true
     };
 
     const predicates: relationalStore.RdbPredicates = new relationalStore.RdbPredicates(this.tableName);
@@ -277,7 +282,17 @@ export class DatabaseManager {
     }
   }
  
-  async updateWordProgress(id: number, boxLevel: number, nextReviewDate: string, reviewCount: number, correctCount: number, wrongCount: number, difficultyScore: number, lastReviewed: string, learned: boolean): Promise<void> {
+  async updateWordProgress(
+    id: number,
+    boxLevel: number,
+    nextReviewDate: string,
+    reviewCount: number,
+    correctCount: number,
+    wrongCount: number,
+    difficultyScore: number,
+    lastReviewed: string,
+    learned: boolean
+  ): Promise<void> {
     if (!this.rdbStore) {
       throw new Error('Database not initialized.');
     }
@@ -331,7 +346,7 @@ export class DatabaseManager {
       const N = Math.min(requiredCount, totalUnlearned);
       const offsets = new Set<number>();
       while (offsets.size < N) {
-        const r = await doRand();
+        const r = doRand();
         offsets.add(Math.floor(r * totalUnlearned));
       }
 
@@ -345,11 +360,14 @@ export class DatabaseManager {
         wordPred.limitAs(1);
         wordPred.offsetAs(offset);
 
-        const rs = await rdbStore.query(wordPred, [
-          'id', 'article', 'word', 'meaning', 'example', 'learned',
-          'box_level', 'next_review_date', 'review_count', 'correct_count',
-          'wrong_count', 'difficulty_score', 'last_reviewed', 'category'
-        ]);
+        const rs = await rdbStore.query(
+          wordPred,
+          [
+            'id', 'article', 'word', 'meaning', 'example', 'learned',
+            'box_level', 'next_review_date', 'review_count', 'correct_count',
+            'wrong_count', 'difficulty_score', 'last_reviewed', 'category'
+          ]
+        );
 
         if (rs.goToFirstRow()) {
           results.push(new WordData(
@@ -390,7 +408,14 @@ export class DatabaseManager {
         .isNull('next_review_date').or().equalTo('next_review_date', '').or().lessThanOrEqualTo('next_review_date', now)
         .endWrap();
 
-      const resultSet = await this.rdbStore.query(predicates, ['id', 'article', 'word', 'meaning', 'example', 'learned', 'box_level', 'next_review_date', 'review_count', 'correct_count', 'wrong_count', 'difficulty_score', 'last_reviewed', 'category']);
+      const resultSet = await this.rdbStore.query(
+        predicates,
+        [
+          'id', 'article', 'word', 'meaning', 'example', 'learned', 'box_level',
+          'next_review_date', 'review_count', 'correct_count', 'wrong_count',
+          'difficulty_score', 'last_reviewed', 'category'
+        ]
+      );
       const results: WordData[] = [];
       while (resultSet.goToNextRow()) {
         results.push(new WordData(
